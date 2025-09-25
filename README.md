@@ -1,3 +1,5 @@
+<<<<<<< HEAD
+
 <p align="center">
   <a href="http://nestjs.com/" target="blank"><img src="https://nestjs.com/img/logo_text.svg" width="320" alt="Nest Logo" /></a>
 </p>
@@ -70,4 +72,8 @@ Nest is an MIT-licensed open source project. It can grow thanks to the sponsors 
 
 ## License
 
-Nest is [MIT licensed](LICENSE).
+# Nest is [MIT licensed](LICENSE).
+
+# ai-chat-assistent-project
+
+> > > > > > > 272a0cf5036c2f8b45884645b2a6a2fcb6a5b723

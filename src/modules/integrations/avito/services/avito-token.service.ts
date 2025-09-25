@@ -1,9 +1,9 @@
 import { Injectable } from '@nestjs/common';
 import { LokiLogger, wait } from 'gnzs-platform-modules';
-import AvitoMessageApi from 'src/shared/api/avito-api/avito-message-api.class';
+import AvitoApi from 'src/shared/api/avito-api/avito-api.class';
 import { GnzsCacheService } from 'src/shared/cache';
 import { Repository } from 'typeorm';
-import { TokensEntity } from '../entities/avito-tokens.entity';
+import { AvitoTokensEntity } from '../entities/avito-tokens.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 
 @Injectable()
@@ -11,8 +11,8 @@ export class AvitoTokensService {
   private refreshingTokens: { [accountId: string]: boolean } = {};
 
   constructor(
-    @InjectRepository(TokensEntity)
-    private readonly repo: Repository<TokensEntity>,
+    @InjectRepository(AvitoTokensEntity)
+    private readonly repo: Repository<AvitoTokensEntity>,
     private readonly logger: LokiLogger,
     private readonly cacheService: GnzsCacheService,
   ) {}
@@ -21,19 +21,17 @@ export class AvitoTokensService {
     // 1. Проверяем кэш
     const cached = await this.cacheService.authToken.get(accountId.toString());
     if (cached) {
-      this.logger.log(`Нашли токен в кэше для accountId=${accountId}`);
+      this.logger.log(`Нашли токен в кэше для аккаунта: ${accountId}`);
       return cached;
     }
 
     // 2. Проверяем БД
     const entity = await this.repo.findOne({
-      where: { id: accountId },
-      relations: ['account'],
+      where: { avitoAccountId: accountId },
     });
 
-    // TODO:Нужно ли сделать условие для обновления токена если до конца его жизни осталось меньше часа
     if (entity?.accessToken && entity?.expiresAt > new Date()) {
-      this.logger.log(`Нашли актуальный токен в БД для accountId=${accountId}`);
+      this.logger.log(`Нашли актуальный токен в БД для аккаунта: ${accountId}`);
       await this.cacheService.authToken.set(
         accountId.toString(),
         entity.accessToken,
@@ -41,7 +39,7 @@ export class AvitoTokensService {
       return entity.accessToken;
     }
 
-    this.logger.log(`Токен в кэше и БД не найден для accountId=${accountId}`);
+    this.logger.log(`Токен в кэше и БД не найден для аккаунта: ${accountId}`);
 
     // 3. Ждём, если токен обновляется
     const maxAttempts = 100;
@@ -62,34 +60,32 @@ export class AvitoTokensService {
     try {
       this.refreshingTokens[accountId] = true;
 
-      const authApi = new AvitoMessageApi('', this.logger);
-      const response = await authApi.getAccessToken();
-      const token = response.access_token;
-      const expiresAt = new Date(Date.now() + response.expires_in * 1000);
+      const { accessToken, expiresIn } = await AvitoApi.getAccessToken();
+      const expiresAt = new Date(Date.now() + expiresIn * 1000);
       // Сохраняем в кэш
-      await this.cacheService.authToken.set(accountId.toString(), token);
+      await this.cacheService.authToken.set(accountId.toString(), accessToken);
 
       // Сохраняем в БД
       if (entity) {
-        entity.accessToken = token;
-        entity.expiresAt = expiresAt;
-        await this.repo.save(entity);
+        await this.repo.update(entity.id, {
+          accessToken,
+          expiresAt,
+        });
       } else {
-        await this.repo.save({
-          account: { id: accountId },
-          source: 'avito',
-          accessToken: token,
+        await this.repo.insert({
+          avitoAccountId: accountId,
+          accessToken,
           expiresAt,
         });
       }
 
       this.logger.log(
-        `Новый токен получен и сохранён для accountId=${accountId}`,
+        `Новый токен получен и сохранён для аккаунта: ${accountId}`,
       );
-      return token;
+      return accessToken;
     } catch (error) {
       this.logger.error(
-        `Ошибка получения токена для accountId=${accountId}: ${error.message}`,
+        `Ошибка получения токена для аккаунта: ${accountId}: ${error.message}`,
       );
       throw error;
     } finally {

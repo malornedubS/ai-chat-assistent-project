@@ -1,16 +1,19 @@
 import {
   Entity,
-  PrimaryGeneratedColumn,
   Column,
-  OneToOne,
+  OneToMany,
+  ManyToOne,
   JoinColumn,
+  PrimaryColumn,
 } from 'typeorm';
+
+import { AvitoTokensEntity } from './avito-tokens.entity';
 import { AccountEntity } from 'src/modules/accounts/entities/account.entity';
 
 @Entity('avito_accounts')
 export class AvitoAccountEntity {
-  @PrimaryGeneratedColumn()
-  id: number;
+  @PrimaryColumn()
+  accountId: number;
 
   @Column()
   name: string;
@@ -30,7 +33,10 @@ export class AvitoAccountEntity {
   @Column({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' })
   updatedAt: Date;
 
-  @OneToOne(() => AccountEntity, { cascade: true })
+  @OneToMany(() => AvitoTokensEntity, (token) => token.avitoAccount)
+  tokens: AvitoTokensEntity[];
+
+  @ManyToOne(() => AccountEntity)
   @JoinColumn({ name: 'account_id' })
   account: AccountEntity;
 }

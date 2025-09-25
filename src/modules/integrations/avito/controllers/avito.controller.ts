@@ -1,6 +1,6 @@
 import { Body, Controller, Get, Post, Query } from '@nestjs/common';
 import { AvitoService } from '../services/avito.service';
-import AvitoMessageApi from 'src/shared/api/avito-api/avito-message-api.class';
+import AvitoApi from 'src/shared/api/avito-api/avito-api.class';
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
 import { CreateSendMessageDto } from '../dto/create-send-message.dto';
 import { GetStoryMessagesDto } from '../dto/get-story-messages.dto';
@@ -10,7 +10,7 @@ import { GetStoryMessagesDto } from '../dto/get-story-messages.dto';
 export class AvitoController {
   constructor(
     private readonly avitoService: AvitoService,
-    private readonly api: AvitoMessageApi,
+    private readonly api: AvitoApi,
   ) {}
   // Отправить сообщение в Avito
   @Post('send-message')
@@ -28,6 +28,6 @@ export class AvitoController {
   @Post('get-token')
   @ApiOperation({ summary: 'Получить токен' })
   async getToken() {
-    return this.api.getAccessToken();
+    return AvitoApi.getAccessToken();
   }
 }

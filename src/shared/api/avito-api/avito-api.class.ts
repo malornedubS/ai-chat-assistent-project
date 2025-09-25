@@ -9,7 +9,7 @@ import {
 import { LokiLogger } from 'gnzs-platform-modules';
 import { GetStoryMessagesDto } from 'src/modules/integrations/avito/dto/get-story-messages.dto';
 
-export default class AvitoMessageApi {
+export default class AvitoApi {
   private api: AxiosInstance;
   private logger: LokiLogger;
   private token: string;
@@ -54,9 +54,9 @@ export default class AvitoMessageApi {
       .then((resp) => resp?.data);
   }
 
-  public async getAccessToken(): Promise<{
-    access_token: string;
-    expires_in: number;
+  public static async getAccessToken(): Promise<{
+    accessToken: string;
+    expiresIn: number;
   }> {
     console.log('Запрос токена Avito');
 
@@ -66,11 +66,13 @@ export default class AvitoMessageApi {
       client_secret: process.env.AVITO_CLIENT_SECRET,
     };
 
-    return axios
-      .post(process.env.AVITO_AUTH_URL, qs.stringify(data), {
+    const { access_token, expires_in } = (
+      await axios.post(process.env.AVITO_AUTH_URL, qs.stringify(data), {
         headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
       })
-      .then((resp) => resp?.data);
+    ).data;
+
+    return { accessToken: access_token, expiresIn: expires_in };
   }
 
   protected createAxios(): AxiosInstance {

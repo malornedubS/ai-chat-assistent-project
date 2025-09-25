@@ -7,20 +7,21 @@ import { BotModule } from 'src/modules/bots/bot.module';
 import { MessageModule } from 'src/modules/messages/message.module';
 import { AvitoService } from './services/avito.service';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { TokensEntity } from './entities/avito-tokens.entity';
-import AvitoMessageApi from 'src/shared/api/avito-api/avito-message-api.class';
+import { AvitoTokensEntity } from './entities/avito-tokens.entity';
+import AvitoApi from 'src/shared/api/avito-api/avito-api.class';
+import { AvitoAccountEntity } from './entities/avito-accounts.entity';
 
 @Module({
   imports: [
-    TypeOrmModule.forFeature([TokensEntity]),
+    TypeOrmModule.forFeature([AvitoTokensEntity, AvitoAccountEntity]),
     HttpModule,
     GnzsCacheModule,
     BotModule,
     MessageModule,
-    AvitoMessageApi,
+    AvitoApi,
   ],
   controllers: [AvitoController],
-  providers: [AvitoTokensService, AvitoService, AvitoMessageApi],
+  providers: [AvitoTokensService, AvitoService, AvitoApi],
   exports: [AvitoTokensService],
 })
 export class AvitoModule {}

@@ -5,16 +5,17 @@ import {
   ManyToOne,
   CreateDateColumn,
   UpdateDateColumn,
+  JoinColumn,
 } from 'typeorm';
-import { AccountEntity } from 'src/modules/accounts/entities/account.entity';
+import { AvitoAccountEntity } from './avito-accounts.entity';
 
-@Entity('tokens')
-export class TokensEntity {
+@Entity('avito_tokens')
+export class AvitoTokensEntity {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @Column()
-  source: string;
+  @Column({ name: 'avito_account_id' })
+  avitoAccountId: number;
 
   @Column()
   accessToken: string;
@@ -28,8 +29,7 @@ export class TokensEntity {
   @UpdateDateColumn()
   updatedAt: Date;
 
-  @ManyToOne(() => AccountEntity, (account) => account.id, {
-    onDelete: 'CASCADE',
-  })
-  account: AccountEntity;
+  @ManyToOne(() => AvitoAccountEntity, { onDelete: 'CASCADE' })
+  @JoinColumn({ name: 'avito_account_id' })
+  avitoAccount: AvitoAccountEntity;
 }

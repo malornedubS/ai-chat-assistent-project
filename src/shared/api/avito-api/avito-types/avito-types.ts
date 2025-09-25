@@ -1,3 +1,14 @@
+export enum MessageTypes {
+  text = 'text',
+  image = 'image',
+  call = 'call',
+  flow_id = 'flow_id',
+  voice = 'voice',
+  item = 'item',
+  link = 'link',
+  location = 'location',
+}
+
 export interface AvitoMessage {
   id: string;
   author_id: number;

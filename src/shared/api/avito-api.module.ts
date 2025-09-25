@@ -1,11 +1,11 @@
 import { Module } from '@nestjs/common';
 import { HttpModule } from '@nestjs/axios';
 import { LokiLogger } from 'gnzs-platform-modules';
-import AvitoMessageApi from './avito-api/avito-message-api.class';
+import AvitoApi from './avito-api/avito-api.class';
 
 @Module({
   imports: [HttpModule],
-  providers: [LokiLogger, AvitoMessageApi],
-  exports: [AvitoMessageApi],
+  providers: [LokiLogger, AvitoApi],
+  exports: [AvitoApi],
 })
 export class AvitoApiModule {}

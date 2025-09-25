@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { LokiLogger } from 'gnzs-platform-modules';
 // import { BotService } from 'src/modules/bots/services/bots.service';
 import { AvitoTokensService } from './avito-token.service';
-import AvitoMessageApi from 'src/shared/api/avito-api/avito-message-api.class';
+import AvitoApi from 'src/shared/api/avito-api/avito-api.class';
 import { CreateSendMessageDto } from '../dto/create-send-message.dto';
 import { GetStoryMessagesDto } from '../dto/get-story-messages.dto';
 import { AvitoMessagesResponse } from 'src/shared/api/avito-api/avito-types/avito-types';
@@ -25,7 +25,7 @@ export class AvitoService {
   async sendMessage(dto: CreateSendMessageDto): Promise<void> {
     try {
       const token = await this.tokensService.getToken(dto.userId);
-      const avitoApi = new AvitoMessageApi(token, this.loki);
+      const avitoApi = new AvitoApi(token, this.loki);
       if (dto.text) {
         await avitoApi.sendMessage({
           userId: dto.userId,
@@ -48,7 +48,7 @@ export class AvitoService {
   ): Promise<AvitoMessagesResponse> {
     try {
       const token = await this.tokensService.getToken(dto.userId);
-      const avitoApi = new AvitoMessageApi(token, this.loki);
+      const avitoApi = new AvitoApi(token, this.loki);
       return avitoApi.getChatMessages(dto);
     } catch (error) {
       this.loki.error('Ошибка ', { error: error.stack });
