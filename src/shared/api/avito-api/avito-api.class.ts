@@ -1,10 +1,15 @@
 import axios, { AxiosInstance } from 'axios';
+import * as FormData from 'form-data';
+import { lookup } from 'mime-types';
 import { AvitoApiInterceptor } from './avito-api.interceptor';
 import * as qs from 'qs';
 import {
+  AvitoImageMessageResponse,
+  AvitoImageUploadResponse,
   AvitoMessageRequest,
-  AvitoMessagesResponse,
   AvitoSendMessageParams,
+  MessageTypes,
+  AvitoMessageResponse,
 } from './avito-types/avito-types';
 import { LokiLogger } from 'gnzs-platform-modules';
 import { GetStoryMessagesDto } from 'src/modules/integrations/avito/dto/get-story-messages.dto';
@@ -25,9 +30,9 @@ export default class AvitoApi {
    */
   public async sendMessage(
     params: AvitoSendMessageParams,
-  ): Promise<AvitoMessagesResponse> {
+  ): Promise<AvitoMessageResponse> {
     const payload: AvitoMessageRequest = {
-      type: 'text',
+      type: MessageTypes.text,
       message: {
         text: params.text,
       },
@@ -37,6 +42,44 @@ export default class AvitoApi {
         `/messenger/v1/accounts/${params.userId}/chats/${params.chatId}/messages`,
         payload,
       )
+      .then((resp) => resp?.data);
+  }
+  /**
+   * Отправить изображение в чат
+   */
+  public async sendImageMessage(
+    params: AvitoSendMessageParams,
+  ): Promise<AvitoImageMessageResponse> {
+    const payload = {
+      image_id: params.imageIds[0],
+    };
+
+    return this.api
+      .post(
+        `/messenger/v1/accounts/${params.userId}/chats/${params.chatId}/messages/image`,
+        payload,
+      )
+      .then((resp) => resp.data);
+  }
+
+  /**
+   * Загрузка изображения на сервер Avito
+   */
+  public async uploadImage(
+    userId: number,
+    imageBuffer: Buffer,
+    filename: string,
+  ): Promise<AvitoImageUploadResponse> {
+    const formData = new FormData();
+    const contentType = lookup(filename) || 'application/octet-stream';
+    formData.append('uploadfile[]', imageBuffer, { filename, contentType });
+
+    return this.api
+      .post(`/messenger/v1/accounts/${userId}/uploadImages`, formData, {
+        headers: {
+          ...formData.getHeaders(),
+        },
+      })
       .then((resp) => resp?.data);
   }
 

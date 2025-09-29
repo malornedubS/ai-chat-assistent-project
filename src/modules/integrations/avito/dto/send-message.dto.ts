@@ -1,6 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
 
-export class CreateSendMessageDto {
+export class SendMessageDto {
   @ApiProperty({ description: 'ID пользователя Avito', example: 418842707 })
   userId: number;
 

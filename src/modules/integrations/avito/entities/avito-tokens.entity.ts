@@ -1,20 +1,17 @@
 import {
   Entity,
-  PrimaryGeneratedColumn,
   Column,
   ManyToOne,
   CreateDateColumn,
   UpdateDateColumn,
   JoinColumn,
+  PrimaryColumn,
 } from 'typeorm';
 import { AvitoAccountEntity } from './avito-accounts.entity';
 
 @Entity('avito_tokens')
 export class AvitoTokensEntity {
-  @PrimaryGeneratedColumn()
-  id: number;
-
-  @Column({ name: 'avito_account_id' })
+  @PrimaryColumn()
   avitoAccountId: number;
 
   @Column()

@@ -67,7 +67,7 @@ export class AvitoTokensService {
 
       // Сохраняем в БД
       if (entity) {
-        await this.repo.update(entity.id, {
+        await this.repo.update(entity.avitoAccountId, {
           accessToken,
           expiresAt,
         });

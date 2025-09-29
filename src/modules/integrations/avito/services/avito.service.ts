@@ -1,11 +1,17 @@
-import { Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable } from '@nestjs/common';
 import { LokiLogger } from 'gnzs-platform-modules';
 // import { BotService } from 'src/modules/bots/services/bots.service';
 import { AvitoTokensService } from './avito-token.service';
 import AvitoApi from 'src/shared/api/avito-api/avito-api.class';
-import { CreateSendMessageDto } from '../dto/create-send-message.dto';
+import { SendMessageDto } from '../dto/send-message.dto';
 import { GetStoryMessagesDto } from '../dto/get-story-messages.dto';
-import { AvitoMessagesResponse } from 'src/shared/api/avito-api/avito-types/avito-types';
+import {
+  AvitoImageMessageResponse,
+  AvitoMessageResponse,
+  AvitoStoryMessagesResponse,
+} from 'src/shared/api/avito-api/avito-types/avito-types';
+import { UploadImageDto } from '../dto/upload-image.dto';
+import { SendImageMessageDto } from '../dto/send-image-message.dto';
 // import { AvitoWebhookDto } from 'src/modules/integrations/avito/dto/avito-webhook.dto';
 // import { repl } from '@nestjs/core';
 
@@ -22,30 +28,87 @@ export class AvitoService {
   /**
    * Отправка сообщения в чат Avito
    */
-  async sendMessage(dto: CreateSendMessageDto): Promise<void> {
+  async sendMessage(dto: SendMessageDto): Promise<AvitoMessageResponse> {
+    const token = await this.tokensService.getToken(dto.userId);
+    const avitoApi = new AvitoApi(token, this.loki);
+    if (!dto.text) {
+      throw new BadRequestException('Текст сообщения обязателен'); //TODO: правильно ли что я так ошибку обрабатываю?
+    }
     try {
-      const token = await this.tokensService.getToken(dto.userId);
-      const avitoApi = new AvitoApi(token, this.loki);
-      if (dto.text) {
-        await avitoApi.sendMessage({
-          userId: dto.userId,
-          chatId: dto.chatId,
-          text: dto.text,
-        });
-        this.loki.log(`Ответ отправлен в чат ${dto.chatId}`);
-      }
+      const result = await avitoApi.sendMessage({
+        userId: dto.userId,
+        chatId: dto.chatId,
+        text: dto.text,
+      });
+
+      this.loki.log(
+        `Ответ отправлен в чат ${dto.chatId}, Текст: ${result.content.text}`,
+      );
+      return result;
     } catch (error) {
-      this.loki.error('Ошибка ', { error: error.stack });
+      this.loki.error('Ошибка Avito API', error);
       throw error;
     }
   }
+  /**
+   * Отправка изображения в чат Avito
+   */
+  async sendImageMessage(
+    dto: SendImageMessageDto,
+  ): Promise<AvitoImageMessageResponse> {
+    if (!dto.imageIds?.length) {
+      throw new BadRequestException('Не указаны imageIds');
+    }
+    try {
+      const token = await this.tokensService.getToken(dto.userId);
+      const avitoApi = new AvitoApi(token, this.loki);
 
+      const result = await avitoApi.sendImageMessage({
+        userId: dto.userId,
+        chatId: dto.chatId,
+        imageIds: dto.imageIds,
+      });
+
+      this.loki.log(`Изображение отправлено в чат ${dto.chatId}`);
+      return result;
+    } catch (error) {
+      this.loki.error('Ошибка Avito API', error);
+      throw error;
+    }
+  }
+  /**
+   * Загрузка изображения на сервер Avito
+   */
+  async uploadImage(
+    dto: UploadImageDto,
+  ): Promise<{ image_id: string; url: string }> {
+    if (dto.file.size > 24 * 1024 * 1024)
+      //TODO:правильно ли я сделал такую проверку тут или ее можно делать где-то в другом месте?
+      throw new Error('Файл слишком большой');
+
+    const token = await this.tokensService.getToken(dto.userId);
+    const avitoApi = new AvitoApi(token, this.loki);
+    const response = await avitoApi.uploadImage(
+      dto.userId,
+      dto.file.buffer,
+      dto.file.originalname,
+    );
+
+    const imageId = Object.keys(response)[0];
+    const url = response[imageId]?.['640x480'];
+    this.loki.log(
+      `Изображение успешно загружено на сервер Avito, image_id=${imageId}`,
+    );
+    if (!imageId || !url) throw new Error('Invalid Avito response');
+
+    return { image_id: imageId, url };
+  }
   /**
    * Полученить историю сообщений из чата Avito
    */
   async getStoryMessages(
     dto: GetStoryMessagesDto,
-  ): Promise<AvitoMessagesResponse> {
+  ): Promise<AvitoStoryMessagesResponse> {
     try {
       const token = await this.tokensService.getToken(dto.userId);
       const avitoApi = new AvitoApi(token, this.loki);
