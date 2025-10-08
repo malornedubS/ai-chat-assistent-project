@@ -1,7 +1,7 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { Type } from 'class-transformer';
 
-export class AvitoWebhookDto {
+export class AvitoMessageWebhookDto {
   @ApiProperty({ description: 'ID события' })
   id: string;
 

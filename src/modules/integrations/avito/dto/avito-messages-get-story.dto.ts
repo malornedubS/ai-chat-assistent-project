@@ -1,6 +1,6 @@
 import { ApiProperty } from '@nestjsx/crud/lib/crud';
 
-export class GetStoryMessagesDto {
+export class AvitoMessagesGetStoryDto {
   @ApiProperty()
   userId: number;
 

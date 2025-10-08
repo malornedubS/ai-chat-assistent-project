@@ -49,9 +49,11 @@ export class GnzsCacheService {
       await this.cacheManager.set(key(subdomain), token, ttl);
     },
 
-    get: async (subdomain: string) => {
+    get: async (subdomain: string | number) => {
       const { key } = CACHING_EXP.BACKEND.AVITO_XAUTH_TOKEN;
-      const cached = await this.cacheManager.get<string>(key(subdomain));
+      const cached = await this.cacheManager.get<string>(
+        key(subdomain.toString()),
+      );
       return cached;
     },
 

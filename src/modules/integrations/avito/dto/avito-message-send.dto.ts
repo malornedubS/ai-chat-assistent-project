@@ -1,6 +1,5 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
-
-export class SendImageMessageDto {
+export class AvitoMessageSendDto {
   @ApiProperty({ description: 'ID пользователя Avito', example: 418842707 })
   userId: number;
 
@@ -11,9 +10,15 @@ export class SendImageMessageDto {
   chatId: string;
 
   @ApiPropertyOptional({
-    description: 'Список ID изображений, загруженных в Avito',
-    type: [String],
-    example: ['47736874135.520ac30e0bd3433b873639bd5d6eaa2a'],
+    description: 'Текст сообщения',
+    example: 'Привет!Это тест?',
   })
-  imageIds: string[];
+  text?: string;
+
+  @ApiPropertyOptional({
+    description: 'ID изображения, загруженного в Avito',
+    type: [String],
+    example: '47736874135.520ac30e0bd3433b873639bd5d6eaa2a',
+  })
+  imageId?: string;
 }

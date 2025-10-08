@@ -16,6 +16,11 @@ export const CACHING_EXP = {
   },
 };
 
+export const MyCronExpressions = {
+  EVERY_6_HOURS: '0 0 */6 * * *',
+  EVERY_5_SECONDS: '*/5 * * * * *',
+};
+
 export const AI_TOOLS = {
   INTEGRATIONS: {
     AMOCRM: 'amocrm',

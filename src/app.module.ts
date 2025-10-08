@@ -1,5 +1,6 @@
 import { Module } from '@nestjs/common';
 //import { ServeStaticModule } from '@nestjs/serve-static';
+
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { configuration } from '../config/database.config';
@@ -13,6 +14,8 @@ import { ChatGptModule } from './modules/chat-gpt/chat-gpt.module';
 import { BotModule } from './modules/bots/bot.module';
 import { WebhookModule } from './modules/webhook/webhook.module';
 import { AvitoModule } from './modules/integrations/avito/avito.module';
+
+import { CronModule } from './modules/cron/cron.module';
 
 @Module({
   imports: [
@@ -43,6 +46,7 @@ import { AvitoModule } from './modules/integrations/avito/avito.module';
       }),
       inject: [ConfigService],
     }),
+    CronModule,
     GnzsCacheModule,
     WebhookModule,
     AmoAccountsModule,

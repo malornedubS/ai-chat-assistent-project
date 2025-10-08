@@ -1,10 +1,10 @@
 import {
   Entity,
   Column,
-  OneToMany,
   ManyToOne,
   JoinColumn,
-  PrimaryColumn,
+  PrimaryGeneratedColumn,
+  OneToOne,
 } from 'typeorm';
 
 import { AvitoTokensEntity } from './avito-tokens.entity';
@@ -12,29 +12,23 @@ import { AccountEntity } from 'src/modules/accounts/entities/account.entity';
 
 @Entity('avito_accounts')
 export class AvitoAccountEntity {
-  @PrimaryColumn()
-  accountId: number;
+  @PrimaryGeneratedColumn()
+  id: number;
 
   @Column()
-  name: string;
+  avitoUserId: number;
 
-  @Column({ nullable: true })
-  subdomain: string;
+  @Column()
+  avitoLogin: string;
 
-  @Column({ nullable: true })
-  status: string;
-
-  @Column({ type: 'jsonb', nullable: true })
-  info: object;
-
-  @Column({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' })
+  @Column()
   createdAt: Date;
 
-  @Column({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' })
+  @Column()
   updatedAt: Date;
 
-  @OneToMany(() => AvitoTokensEntity, (token) => token.avitoAccount)
-  tokens: AvitoTokensEntity[];
+  @OneToOne(() => AvitoTokensEntity, (token) => token.avitoAccount)
+  tokens: AvitoTokensEntity;
 
   @ManyToOne(() => AccountEntity)
   @JoinColumn({ name: 'account_id' })

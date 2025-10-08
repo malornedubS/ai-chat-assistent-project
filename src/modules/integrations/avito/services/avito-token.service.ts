@@ -18,8 +18,9 @@ export class AvitoTokensService {
   ) {}
 
   public async getToken(accountId: number): Promise<string> {
+    console.log('getToken вызван для accountId:', accountId);
     // 1. Проверяем кэш
-    const cached = await this.cacheService.authToken.get(accountId.toString());
+    const cached = await this.cacheService.authToken.get(accountId);
     if (cached) {
       this.logger.log(`Нашли токен в кэше для аккаунта: ${accountId}`);
       return cached;
@@ -27,16 +28,26 @@ export class AvitoTokensService {
 
     // 2. Проверяем БД
     const entity = await this.repo.findOne({
-      where: { avitoAccountId: accountId },
+      where: { avitoUserId: accountId },
     });
 
-    if (entity?.accessToken && entity?.expiresAt > new Date()) {
-      this.logger.log(`Нашли актуальный токен в БД для аккаунта: ${accountId}`);
-      await this.cacheService.authToken.set(
-        accountId.toString(),
-        entity.accessToken,
-      );
-      return entity.accessToken;
+    if (entity?.accessToken) {
+      const expireThreshold = new Date(Date.now() + 60 * 60 * 1000); // запас 1 час
+
+      if (entity.expiresAt > expireThreshold) {
+        this.logger.log(
+          `Нашли актуальный токен в БД для аккаунта: ${accountId}`,
+        );
+        await this.cacheService.authToken.set(
+          accountId.toString(),
+          entity.accessToken,
+        );
+        return entity.accessToken;
+      } else {
+        this.logger.log(
+          `Токен для аккаунта ${accountId} истекает менее чем через час — обновляем`,
+        );
+      }
     }
 
     this.logger.log(`Токен в кэше и БД не найден для аккаунта: ${accountId}`);
@@ -67,13 +78,13 @@ export class AvitoTokensService {
 
       // Сохраняем в БД
       if (entity) {
-        await this.repo.update(entity.avitoAccountId, {
+        await this.repo.update(entity.avitoUserId, {
           accessToken,
           expiresAt,
         });
       } else {
         await this.repo.insert({
-          avitoAccountId: accountId,
+          avitoUserId: accountId,
           accessToken,
           expiresAt,
         });

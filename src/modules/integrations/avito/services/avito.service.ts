@@ -3,15 +3,13 @@ import { LokiLogger } from 'gnzs-platform-modules';
 // import { BotService } from 'src/modules/bots/services/bots.service';
 import { AvitoTokensService } from './avito-token.service';
 import AvitoApi from 'src/shared/api/avito-api/avito-api.class';
-import { SendMessageDto } from '../dto/send-message.dto';
-import { GetStoryMessagesDto } from '../dto/get-story-messages.dto';
-import {
-  AvitoImageMessageResponse,
-  AvitoMessageResponse,
-  AvitoStoryMessagesResponse,
-} from 'src/shared/api/avito-api/avito-types/avito-types';
-import { UploadImageDto } from '../dto/upload-image.dto';
-import { SendImageMessageDto } from '../dto/send-image-message.dto';
+// import { AvitoMessageSendDto } from '../dto/avito-message-send.dto';
+import { AvitoMessagesGetStoryDto } from '../dto/avito-messages-get-story.dto';
+import { AvitoStoryMessagesResponse } from 'src/shared/api/avito-api/types/avito-message-types';
+import { AvitoUploadImageDto } from '../dto/avito-upload-image.dto';
+// import { AvitoSendImageMessageDto } from '../dto/avito-message-send-image.dto';
+import { AvitoMessageSendDto } from '../dto/avito-message-send.dto';
+import { AvitoMessageResponseDto } from '../dto/avito-message-send-type.dto';
 // import { AvitoWebhookDto } from 'src/modules/integrations/avito/dto/avito-webhook.dto';
 // import { repl } from '@nestjs/core';
 
@@ -25,52 +23,38 @@ export class AvitoService {
     this.loki.setContextName(AvitoService.name);
   }
 
-  /**
-   * Отправка сообщения в чат Avito
-   */
-  async sendMessage(dto: SendMessageDto): Promise<AvitoMessageResponse> {
+  async sendMessage(
+    dto: AvitoMessageSendDto,
+  ): Promise<AvitoMessageResponseDto> {
+    if (dto.text && dto.imageId?.length)
+      throw new BadRequestException('Отправьте либо текст, либо изображение'); // можно ли так делать? или это лучше выносить в другие места?
+
+    if (!dto.text && !dto.imageId?.length)
+      throw new BadRequestException('Укажите текст или изображение');
+
     const token = await this.tokensService.getToken(dto.userId);
     const avitoApi = new AvitoApi(token, this.loki);
-    if (!dto.text) {
-      throw new BadRequestException('Текст сообщения обязателен'); //TODO: правильно ли что я так ошибку обрабатываю?
-    }
+
     try {
-      const result = await avitoApi.sendMessage({
-        userId: dto.userId,
-        chatId: dto.chatId,
-        text: dto.text,
-      });
-
-      this.loki.log(
-        `Ответ отправлен в чат ${dto.chatId}, Текст: ${result.content.text}`,
-      );
-      return result;
-    } catch (error) {
-      this.loki.error('Ошибка Avito API', error);
-      throw error;
-    }
-  }
-  /**
-   * Отправка изображения в чат Avito
-   */
-  async sendImageMessage(
-    dto: SendImageMessageDto,
-  ): Promise<AvitoImageMessageResponse> {
-    if (!dto.imageIds?.length) {
-      throw new BadRequestException('Не указаны imageIds');
-    }
-    try {
-      const token = await this.tokensService.getToken(dto.userId);
-      const avitoApi = new AvitoApi(token, this.loki);
-
-      const result = await avitoApi.sendImageMessage({
-        userId: dto.userId,
-        chatId: dto.chatId,
-        imageIds: dto.imageIds,
-      });
-
-      this.loki.log(`Изображение отправлено в чат ${dto.chatId}`);
-      return result;
+      if (dto.text) {
+        const result = await avitoApi.sendMessage({
+          userId: dto.userId,
+          chatId: dto.chatId,
+          text: dto.text,
+        });
+        this.loki.log(
+          `Ответ отправлен в чат ${dto.chatId}, Текст: ${result.content.text}`,
+        );
+        return result;
+      } else {
+        const result = await avitoApi.sendImageMessage({
+          userId: dto.userId,
+          chatId: dto.chatId,
+          imageId: dto.imageId,
+        });
+        this.loki.log(`Изображение отправлено в чат ${dto.chatId}`);
+        return result;
+      }
     } catch (error) {
       this.loki.error('Ошибка Avito API', error);
       throw error;
@@ -80,10 +64,9 @@ export class AvitoService {
    * Загрузка изображения на сервер Avito
    */
   async uploadImage(
-    dto: UploadImageDto,
-  ): Promise<{ image_id: string; url: string }> {
+    dto: AvitoUploadImageDto,
+  ): Promise<{ imageId: string; url: string }> {
     if (dto.file.size > 24 * 1024 * 1024)
-      //TODO:правильно ли я сделал такую проверку тут или ее можно делать где-то в другом месте?
       throw new Error('Файл слишком большой');
 
     const token = await this.tokensService.getToken(dto.userId);
@@ -101,13 +84,13 @@ export class AvitoService {
     );
     if (!imageId || !url) throw new Error('Invalid Avito response');
 
-    return { image_id: imageId, url };
+    return { imageId, url };
   }
   /**
    * Полученить историю сообщений из чата Avito
    */
   async getStoryMessages(
-    dto: GetStoryMessagesDto,
+    dto: AvitoMessagesGetStoryDto,
   ): Promise<AvitoStoryMessagesResponse> {
     try {
       const token = await this.tokensService.getToken(dto.userId);
@@ -118,6 +101,58 @@ export class AvitoService {
       throw error;
     }
   }
+
+  // /**
+  //  * Отправка сообщения в чат Avito
+  //  */
+  // async sendMessage(dto: AvitoMessageSendDto): Promise<AvitoMessageResponse> {
+  //   const token = await this.tokensService.getToken(dto.userId);
+  //   const avitoApi = new AvitoApi(token, this.loki);
+  //   if (!dto.text) {
+  //     throw new BadRequestException('Текст сообщения обязателен');
+  //   }
+  //   try {
+  //     const result = await avitoApi.sendMessage({
+  //       userId: dto.userId,
+  //       chatId: dto.chatId,
+  //       text: dto.text,
+  //     });
+
+  //     this.loki.log(
+  //       `Ответ отправлен в чат ${dto.chatId}, Текст: ${result.content.text}`,
+  //     );
+  //     return result;
+  //   } catch (error) {
+  //     this.loki.error('Ошибка Avito API', error);
+  //     throw error;
+  //   }
+  // }
+  // /**
+  //  * Отправка изображения в чат Avito
+  //  */
+  // async sendImageMessage(
+  //   dto: AvitoSendImageMessageDto,
+  // ): Promise<AvitoImageMessageResponse> {
+  //   if (!dto.imageId?.length) {
+  //     throw new BadRequestException('Не указаны imageIds');
+  //   }
+  //   try {
+  //     const token = await this.tokensService.getToken(dto.userId);
+  //     const avitoApi = new AvitoApi(token, this.loki);
+
+  //     const result = await avitoApi.sendImageMessage({
+  //       userId: dto.userId,
+  //       chatId: dto.chatId,
+  //       imageId: dto.imageId,
+  //     });
+
+  //     this.loki.log(`Изображение отправлено в чат ${dto.chatId}`);
+  //     return result;
+  //   } catch (error) {
+  //     this.loki.error('Ошибка Avito API', error);
+  //     throw error;
+  //   }
+  // }
 
   //   /**
   //    * Обработка вебхука от Avito

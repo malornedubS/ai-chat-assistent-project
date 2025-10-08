@@ -52,7 +52,7 @@ export interface AvitoSendMessageParams {
   userId: number;
   chatId: string;
   text?: string;
-  imageIds?: string[];
+  imageId?: string;
 }
 
 export interface AvitoMessageRequest {

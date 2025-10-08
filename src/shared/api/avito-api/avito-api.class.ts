@@ -10,9 +10,9 @@ import {
   AvitoSendMessageParams,
   MessageTypes,
   AvitoMessageResponse,
-} from './avito-types/avito-types';
+} from './types/avito-message-types';
 import { LokiLogger } from 'gnzs-platform-modules';
-import { GetStoryMessagesDto } from 'src/modules/integrations/avito/dto/get-story-messages.dto';
+import { AvitoMessagesGetStoryDto } from 'src/modules/integrations/avito/dto/avito-messages-get-story.dto';
 
 export default class AvitoApi {
   private api: AxiosInstance;
@@ -51,7 +51,7 @@ export default class AvitoApi {
     params: AvitoSendMessageParams,
   ): Promise<AvitoImageMessageResponse> {
     const payload = {
-      image_id: params.imageIds[0],
+      image_id: params.imageId,
     };
 
     return this.api
@@ -71,7 +71,7 @@ export default class AvitoApi {
     filename: string,
   ): Promise<AvitoImageUploadResponse> {
     const formData = new FormData();
-    const contentType = lookup(filename) || 'application/octet-stream';
+    const contentType = lookup(filename) || 'application/octet-stream'; // или лучше сделать утилиту с разрешениями?
     formData.append('uploadfile[]', imageBuffer, { filename, contentType });
 
     return this.api
@@ -86,7 +86,7 @@ export default class AvitoApi {
   /**
    * Получить историю сообщений в чате
    */
-  public async getChatMessages(dto: GetStoryMessagesDto) {
+  public async getChatMessages(dto: AvitoMessagesGetStoryDto) {
     return this.api
       .get(
         `/messenger/v3/accounts/${dto.userId}/chats/${dto.chatId}/messages`,
