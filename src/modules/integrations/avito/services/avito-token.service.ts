@@ -18,11 +18,11 @@ export class AvitoTokensService {
   ) {}
 
   public async getToken(accountId: number): Promise<string> {
-    // 1️ Проверяем кэш
+    // 1. Проверяем кэш
     const cached = await this.cacheService.authToken.get(accountId.toString());
     if (cached) return cached;
 
-    // 2️ Проверяем БД
+    // 2. Проверяем БД
     const entity = await this.repo.findOne({
       where: { avitoUserId: accountId },
     });
@@ -32,7 +32,7 @@ export class AvitoTokensService {
       );
     }
 
-    // 3️ Проверяем срок жизни токена (запас 1 час)
+    // 3.Проверяем срок жизни токена (запас 1 час)
     const expireThreshold = new Date(Date.now() + 60 * 60 * 1000);
     if (entity.expiresAt > expireThreshold) {
       await this.cacheService.authToken.set(
@@ -46,7 +46,7 @@ export class AvitoTokensService {
       `Токен устарел для аккаунта ${accountId}, обновляем через refreshToken.`,
     );
 
-    // 4️ Ждём, если токен обновляется
+    // 4.Ждём, если токен обновляется
     const maxAttempts = 100;
     let attempts = 0;
 
@@ -61,7 +61,7 @@ export class AvitoTokensService {
       );
     }
 
-    // 5️ Обновление токена
+    // 5.Обновление токена
     this.refreshingTokens[accountId] = true;
     try {
       const { accessToken, refreshToken, expiresIn } =
