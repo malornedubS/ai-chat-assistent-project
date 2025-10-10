@@ -26,7 +26,7 @@ export class AvitoTokensService {
     const entity = await this.repo.findOne({
       where: { avitoUserId: accountId },
     });
-    if (!entity || !entity.refreshToken) {
+    if (!entity.accessToken) {
       throw new Error(
         `Токен для аккаунта ${accountId} не найден или нет refreshToken. Требуется авторизация через Avito.`,
       );
@@ -66,6 +66,7 @@ export class AvitoTokensService {
     try {
       const { accessToken, refreshToken, expiresIn } =
         await AvitoApi.refreshAccessToken(entity.refreshToken);
+
       const expiresAt = new Date(Date.now() + expiresIn * 1000);
       await this.repo.update(
         { avitoUserId: accountId },
@@ -79,6 +80,7 @@ export class AvitoTokensService {
       await this.cacheService.authToken.set(accountId.toString(), accessToken);
 
       this.logger.log(`Токен успешно обновлён для аккаунта ${accountId}`);
+
       return accessToken;
     } catch (error: any) {
       this.logger.error(
