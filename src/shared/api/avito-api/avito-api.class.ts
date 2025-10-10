@@ -97,6 +97,63 @@ export default class AvitoApi {
       .then((resp) => resp?.data);
   }
 
+  /**
+   * Обмен authorization_code на access_token и refresh_token
+   */
+  public static async getAccessTokenByCode(code: string): Promise<{
+    accessToken: string;
+    refreshToken: string;
+    expiresIn: number;
+  }> {
+    const data = {
+      grant_type: 'authorization_code',
+      code,
+      client_id: process.env.AVITO_CLIENT_ID,
+      client_secret: process.env.AVITO_CLIENT_SECRET,
+      redirect_uri: process.env.AVITO_REDIRECT_URL,
+    };
+
+    const { access_token, refresh_token, expires_in } = (
+      await axios.post(process.env.AVITO_AUTH_URL, qs.stringify(data), {
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+      })
+    ).data;
+
+    return {
+      accessToken: access_token,
+      refreshToken: refresh_token,
+      expiresIn: expires_in,
+    };
+  }
+
+  /**
+   * Обновление access_token через refresh_token
+   */
+  public static async refreshAccessToken(refreshToken: string): Promise<{
+    accessToken: string;
+    refreshToken: string;
+    expiresIn: number;
+  }> {
+    const data = {
+      grant_type: 'refresh_token',
+      client_id: process.env.AVITO_CLIENT_ID,
+      client_secret: process.env.AVITO_CLIENT_SECRET,
+      refresh_token: refreshToken,
+    };
+
+    const { access_token, refresh_token, expires_in } = (
+      await axios.post(process.env.AVITO_AUTH_URL, qs.stringify(data), {
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+      })
+    ).data;
+
+    return {
+      accessToken: access_token,
+      refreshToken: refresh_token,
+      expiresIn: expires_in,
+    };
+  }
+
   public static async getAccessToken(): Promise<{
     accessToken: string;
     expiresIn: number;
