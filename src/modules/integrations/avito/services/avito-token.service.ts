@@ -27,9 +27,7 @@ export class AvitoTokensService {
       where: { avitoUserId: accountId },
     });
     if (!entity.accessToken) {
-      throw new Error(
-        `Токен для аккаунта ${accountId} не найден или нет refreshToken. Требуется авторизация через Avito.`,
-      );
+      throw new Error(`Токен для аккаунта ${accountId} не найден.`);
     }
 
     // 3.Проверяем срок жизни токена (запас 1 час)
