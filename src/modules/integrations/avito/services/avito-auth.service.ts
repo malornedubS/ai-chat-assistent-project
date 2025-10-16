@@ -43,5 +43,8 @@ export class AvitoAuthService {
 
     // 4. Сохраняем токены
     await this.tokenService.saveToken(userInfo.id, tokens);
+
+    //5. Регистрируем вебхук
+    await AvitoApi.registerWebhook(tokens.accessToken);
   }
 }

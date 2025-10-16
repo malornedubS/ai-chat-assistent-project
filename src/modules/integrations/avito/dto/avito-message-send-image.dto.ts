@@ -12,6 +12,8 @@ export class AvitoMessageSendImageDto {
 
   @ApiProperty({
     description: 'Файл изображения',
+    type: 'string',
+    format: 'binary',
   })
   file: any;
 }

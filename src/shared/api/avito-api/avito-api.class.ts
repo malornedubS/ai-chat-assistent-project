@@ -169,6 +169,26 @@ export default class AvitoApi {
     };
   }
 
+  /**
+   * Зарегистрировать URL для получения вебхуков
+   */
+  public static async registerWebhook(accessToken: string): Promise<void> {
+    const webhookUrl = process.env.AVITO_WEBHOOK_URL;
+
+    const response = await axios.post(
+      `${process.env.AVITO_API_URL}/messenger/v3/webhook`,
+      { url: webhookUrl },
+      {
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+          'Content-Type': 'application/json',
+        },
+      },
+    );
+
+    return response.data;
+  }
+
   public static async getAccessToken(): Promise<{
     accessToken: string;
     expiresIn: number;
