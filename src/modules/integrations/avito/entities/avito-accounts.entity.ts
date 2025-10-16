@@ -11,15 +11,21 @@ import { AvitoTokensEntity } from './avito-tokens.entity';
 import { AccountEntity } from 'src/modules/accounts/entities/account.entity';
 
 @Entity('avito_accounts')
-export class AvitoAccountEntity {
+export class AvitoAccountsEntity {
   @PrimaryGeneratedColumn()
   id: number;
 
   @Column()
-  avitoUserId: number;
+  accountId: number;
 
   @Column()
-  avitoLogin: string;
+  avitoAccountId: number;
+
+  @Column()
+  name: string;
+
+  @Column()
+  email: string;
 
   @Column()
   createdAt: Date;

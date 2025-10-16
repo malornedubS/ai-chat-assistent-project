@@ -10,44 +10,37 @@ import {
 import { AvitoService } from '../services/avito.service';
 import AvitoApi from 'src/shared/api/avito-api/avito-api.class';
 import { ApiBody, ApiConsumes, ApiOperation, ApiTags } from '@nestjs/swagger';
-
 import { AvitoMessagesGetStoryDto } from '../dto/avito-messages-get-story.dto';
 import { FileInterceptor } from '@nestjs/platform-express';
-
-import { AvitoMessageSendDto } from '../dto/avito-message-send.dto';
+import { AvitoMessageSendTextDto } from '../dto/avito-message-send-text.dto';
+import { AvitoMessageSendImageDto } from '../dto/avito-message-send-image.dto';
 
 @Controller('avito')
 @ApiTags('avito/message')
 export class AvitoController {
-  constructor(
-    private readonly avitoService: AvitoService,
-    private readonly api: AvitoApi,
-  ) {}
+  constructor(private readonly avitoService: AvitoService) {}
 
   // Отправить сообщение в Avito
-  @Post('message/send')
+  @Post('message/send/text')
   @ApiOperation({ summary: 'Отправить сообщение в Avito' })
-  async sendMessage(@Body() dto: AvitoMessageSendDto) {
-    return this.avitoService.sendMessage(dto);
+  async sendMessage(@Body() dto: AvitoMessageSendTextDto) {
+    return this.avitoService.sendTextMessage(dto);
   }
 
-  // Загрузка изображения на сервер Аvito
-  @Post('message/upload/image')
-  @ApiOperation({ summary: 'Загрузить изображение на сервер Avito' })
+  // Отправить изображение в Avito
+  @Post('message/send/image')
+  @ApiOperation({ summary: 'Отправить изображение в чат Avito' })
   @UseInterceptors(FileInterceptor('file'))
   @ApiConsumes('multipart/form-data')
-  @ApiBody({
-    schema: {
-      type: 'object',
-      properties: {
-        userId: { type: 'number' },
-        file: { type: 'string', format: 'binary' },
-      },
-      required: ['userId', 'file'],
-    },
-  })
-  async uploadImage(@Body('userId') userId: number, @UploadedFile() file: any) {
-    return this.avitoService.uploadImage({ userId, file });
+  @ApiBody({ type: AvitoMessageSendImageDto })
+  async sendImageMessage(
+    @Body() body: Omit<AvitoMessageSendImageDto, 'file'>,
+    @UploadedFile() file: any,
+  ) {
+    return this.avitoService.sendImageMessage({
+      ...body,
+      file,
+    });
   }
 
   // Получить историю сообщений
@@ -63,18 +56,4 @@ export class AvitoController {
   async getToken() {
     return AvitoApi.getAccessToken();
   }
-
-  // // Отправить сообщение в Avito
-  // @Post('/send/message')
-  // @ApiOperation({ summary: 'Отправить сообщение в Avito' })
-  // async sendMessage(@Body() dto: AvitoMessageSendDto) {
-  //   return this.avitoService.sendMessage(dto);
-  // }
-
-  // // Отправить изображение в Avito
-  // @Post('/send/image')
-  // @ApiOperation({ summary: 'Отправить изображение в Avito' })
-  // async sendImageMessage(@Body() dto: AvitoMessageSendImageDto) {
-  //   return this.avitoService.sendImageMessage(dto);
-  // }
 }

@@ -2,26 +2,23 @@ import {
   Entity,
   Column,
   JoinColumn,
-  PrimaryGeneratedColumn,
   CreateDateColumn,
   UpdateDateColumn,
   OneToOne,
+  PrimaryColumn,
 } from 'typeorm';
-import { AvitoAccountEntity } from './avito-accounts.entity';
+import { AvitoAccountsEntity } from './avito-accounts.entity';
 
 @Entity('avito_tokens')
 export class AvitoTokensEntity {
-  @PrimaryGeneratedColumn()
-  id: number;
-
-  @Column({ name: 'avito_user_id' })
-  avitoUserId: number;
+  @PrimaryColumn()
+  avitoAccountId: number;
 
   @Column()
   accessToken: string;
 
   @Column()
-  refreshToken?: string;
+  refreshToken: string;
 
   @Column()
   expiresAt: Date;
@@ -32,7 +29,10 @@ export class AvitoTokensEntity {
   @UpdateDateColumn()
   updatedAt: Date;
 
-  @OneToOne(() => AvitoAccountEntity)
-  @JoinColumn({ name: 'avito_user_id', referencedColumnName: 'avitoUserId' })
-  avitoAccount: AvitoAccountEntity;
+  @OneToOne(() => AvitoAccountsEntity)
+  @JoinColumn({
+    name: 'avito_account_id',
+    referencedColumnName: 'avitoAccountId',
+  })
+  avitoAccount: AvitoAccountsEntity;
 }

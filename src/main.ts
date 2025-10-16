@@ -17,7 +17,7 @@ import { urlencoded, json } from 'express';
 async function bootstrap() {
   const config: NestApplicationOptions = {
     cors: {
-      origin: /https?:\//,
+      origin: true,
       methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
       preflightContinue: false,
       optionsSuccessStatus: 204,
@@ -28,7 +28,7 @@ async function bootstrap() {
 
   const app = await NestFactory.create(AppModule, config);
 
-  app.use(helmet());
+  // app.use(helmet());
   app.use(json({ limit: '50mb' }));
   app.use(urlencoded({ extended: true, limit: '50mb' }));
   app.useGlobalFilters(new HttpExceptionFilter());
@@ -37,18 +37,18 @@ async function bootstrap() {
   // Here wer can connect static
   //app.use('/terms', express.static('./dist/public/terms.html'))
 
-  // авторизация для документации
-  if (process.env.MODE != 'dev') {
-    app.use(
-      ['/docs', '/docs-json'],
-      basicAuth({
-        challenge: true,
-        users: {
-          [process.env.SWAGGER_USER]: process.env.SWAGGER_PASSWORD,
-        },
-      }),
-    );
-  }
+  // // авторизация для документации
+  // if (process.env.MODE != 'dev') {
+  //   app.use(
+  //     ['/docs', '/docs-json'],
+  //     basicAuth({
+  //       challenge: true,
+  //       users: {
+  //         [process.env.SWAGGER_USER]: process.env.SWAGGER_PASSWORD,
+  //       },
+  //     }),
+  //   );
+  // }
 
   const configSwagger = new DocumentBuilder()
     .setTitle('Your awesome API')

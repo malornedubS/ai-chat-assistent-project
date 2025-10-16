@@ -9,19 +9,28 @@ import { AvitoService } from './services/avito.service';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { AvitoTokensEntity } from './entities/avito-tokens.entity';
 import AvitoApi from 'src/shared/api/avito-api/avito-api.class';
-import { AvitoAccountEntity } from './entities/avito-accounts.entity';
+import { AvitoAccountsEntity } from './entities/avito-accounts.entity';
+import { AvitoAuthController } from './controllers/avito-auth.controller';
+import { AvitoAuthService } from './services/avito-auth.service';
+import { AvitoAccountsService } from './services/avito-account.service';
 
 @Module({
   imports: [
-    TypeOrmModule.forFeature([AvitoTokensEntity, AvitoAccountEntity]),
+    TypeOrmModule.forFeature([AvitoTokensEntity, AvitoAccountsEntity]),
     HttpModule,
     GnzsCacheModule,
     BotModule,
     MessageModule,
     AvitoApi,
   ],
-  controllers: [AvitoController],
-  providers: [AvitoTokensService, AvitoService, AvitoApi],
+  controllers: [AvitoController, AvitoAuthController],
+  providers: [
+    AvitoTokensService,
+    AvitoService,
+    AvitoApi,
+    AvitoAuthService,
+    AvitoAccountsService,
+  ],
   exports: [AvitoTokensService],
 })
 export class AvitoModule {}

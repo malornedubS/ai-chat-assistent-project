@@ -96,9 +96,24 @@ export default class AvitoApi {
       )
       .then((resp) => resp?.data);
   }
+  /**
+   * Инофрмация о пользователе
+   */
+  public static async getUserInfo(accessToken: string): Promise<any> {
+    const response = await axios.get(
+      `${process.env.AVITO_API_URL}/core/v1/accounts/self`,
+      {
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+          'Content-Type': 'application/json',
+        },
+      },
+    );
+    return response.data;
+  }
 
   /**
-   * Обмен authorization_code на access_token и refresh_token
+   * Обмен authorization_code на accessToken и refreshToken
    */
   public static async getAccessTokenByCode(code: string): Promise<{
     accessToken: string;
@@ -127,7 +142,7 @@ export default class AvitoApi {
   }
 
   /**
-   * Обновление access_token через refresh_token
+   * Обновление accessToken через refreshToken
    */
   public static async refreshAccessToken(refreshToken: string): Promise<{
     accessToken: string;

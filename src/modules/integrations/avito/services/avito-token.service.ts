@@ -18,33 +18,62 @@ export class AvitoTokensService {
   ) {}
 
   public async getToken(accountId: number): Promise<string> {
-    // 1. Проверяем кэш
-    const cached = await this.cacheService.authToken.get(accountId.toString());
-    if (cached) return cached;
-
-    // 2. Проверяем БД
-    const entity = await this.repo.findOne({
-      where: { avitoUserId: accountId },
-    });
-    if (!entity.accessToken) {
-      throw new Error(`Токен для аккаунта ${accountId} не найден.`);
-    }
-
-    // 3.Проверяем срок жизни токена (запас 1 час)
-    const expireThreshold = new Date(Date.now() + 60 * 60 * 1000);
-    if (entity.expiresAt > expireThreshold) {
-      await this.cacheService.authToken.set(
+    try {
+      // 1. Проверяем кэш
+      const cached = await this.cacheService.authToken.get(
         accountId.toString(),
-        entity.accessToken,
       );
-      return entity.accessToken;
+      if (cached) return cached;
+
+      // 2. Проверяем БД
+      const token = await this.repo.findOne({
+        where: { avitoAccountId: accountId },
+      });
+
+      if (!token || !token.accessToken) {
+        throw new Error(`Токен для аккаунта ${accountId} не найден.`);
+      }
+
+      // 3. Проверяем срок жизни токена (запас 1 час)
+      const expireThreshold = new Date(Date.now() + 60 * 60 * 1000);
+      if (token.expiresAt > expireThreshold) {
+        await this.cacheService.authToken.set(
+          accountId.toString(),
+          token.accessToken,
+        );
+        return token.accessToken;
+      }
+
+      // 4. Вызываем отдельный метод для обновления токена
+      return await this.refreshToken(accountId);
+    } catch (error) {
+      this.logger.error('Ошибка получения токена Avito:', {
+        accountId,
+        error: error.message,
+        stack: error.stack,
+      });
+
+      throw error;
+    }
+  }
+
+  /**
+   * Обновление токена
+   */
+  public async refreshToken(accountId: number): Promise<string> {
+    // 1. Получаем токен из БД
+    const token = await this.repo.findOne({
+      where: { avitoAccountId: accountId },
+    });
+
+    if (!token) {
+      throw new Error(`Токен для аккаунта ${accountId} не найден`);
     }
 
     this.logger.log(
       `Токен устарел для аккаунта ${accountId}, обновляем через refreshToken.`,
     );
 
-    // 4.Ждём, если токен обновляется
     const maxAttempts = 100;
     let attempts = 0;
 
@@ -59,21 +88,20 @@ export class AvitoTokensService {
       );
     }
 
-    // 5.Обновление токена
+    // 2. Обновление токена
     this.refreshingTokens[accountId] = true;
     try {
       const { accessToken, refreshToken, expiresIn } =
-        await AvitoApi.refreshAccessToken(entity.refreshToken);
+        await AvitoApi.refreshAccessToken(token.refreshToken);
 
       const expiresAt = new Date(Date.now() + expiresIn * 1000);
-      await this.repo.update(
-        { avitoUserId: accountId },
-        {
-          accessToken: accessToken,
-          refreshToken: refreshToken,
-          expiresAt,
-        },
-      );
+
+      await this.repo.save({
+        avitoAccountId: accountId,
+        accessToken: accessToken,
+        refreshToken: refreshToken,
+        expiresAt,
+      });
 
       await this.cacheService.authToken.set(accountId.toString(), accessToken);
 
@@ -95,26 +123,26 @@ export class AvitoTokensService {
   /**
    * Сохраняет первичные токены
    */
-  public async saveTokens(
-    accountId: number,
+  public async saveToken(
+    avitoAccountId: number,
     tokens: { accessToken: string; refreshToken: string; expiresIn: number },
   ): Promise<void> {
     const expiresAt = new Date(Date.now() + tokens.expiresIn * 1000);
 
-    // Сохраняем в БД
     await this.repo.save({
-      avitoUserId: accountId,
+      avitoAccountId: avitoAccountId,
       accessToken: tokens.accessToken,
       refreshToken: tokens.refreshToken,
       expiresAt,
     });
 
-    // Сохраняем в кэш
     await this.cacheService.authToken.set(
-      accountId.toString(),
+      avitoAccountId.toString(),
       tokens.accessToken,
     );
 
-    this.logger.log(`Токены Avito успешно сохранены для аккаунта ${accountId}`);
+    this.logger.log(
+      `Токены Avito успешно сохранены для аккаунта ${avitoAccountId}`,
+    );
   }
 }

@@ -1,6 +1,6 @@
 import { ApiProperty } from '@nestjsx/crud/lib/crud';
 
-export class AvitoMessagesGetStoryDto {
+export class AvitoMessageSendImageDto {
   @ApiProperty({ description: 'ID пользователя Avito', example: 418842707 })
   userId: number;
 
@@ -11,10 +11,7 @@ export class AvitoMessagesGetStoryDto {
   chatId: string;
 
   @ApiProperty({
-    description: 'Лимит сообщений',
-    example: '50',
+    description: 'Файл изображения',
   })
-  limit: number;
-
-  offset: string;
+  file: any;
 }

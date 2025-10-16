@@ -1,5 +1,5 @@
 import { AmoAccountEntity } from 'src/modules/amo-accounts/entities/amo-account.entity';
-import { AvitoAccountEntity } from 'src/modules/integrations/avito/entities/avito-accounts.entity';
+import { AvitoAccountsEntity } from 'src/modules/integrations/avito/entities/avito-accounts.entity';
 import {
   Column,
   Entity,
@@ -25,6 +25,6 @@ export class AccountEntity {
   @OneToOne(() => AmoAccountEntity, (amoAccount) => amoAccount.account)
   amoAccounts: AmoAccountEntity;
 
-  @OneToMany(() => AvitoAccountEntity, (avitoAccount) => avitoAccount.account)
-  avitoAccount: AvitoAccountEntity[];
+  @OneToMany(() => AvitoAccountsEntity, (avitoAccount) => avitoAccount.account)
+  avitoAccount: AvitoAccountsEntity[];
 }

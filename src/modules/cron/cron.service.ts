@@ -24,7 +24,7 @@ export class CronService {
 
     const accounts = await this.repo.find();
     for (const acc of accounts) {
-      await this.avitoTokensService.getToken(acc.avitoUserId);
+      await this.avitoTokensService.refreshToken(acc.avitoAccountId);
     }
     this.loki.log('Крон: обновление токенов завершено');
   }

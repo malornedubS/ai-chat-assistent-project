@@ -4,6 +4,7 @@ import { Cache } from 'cache-manager';
 import { CACHING_EXP } from 'config/constants';
 import { AmoAccountEntity } from 'src/modules/amo-accounts/entities/amo-account.entity';
 import { AccountEntity } from 'src/modules/accounts/entities/account.entity';
+import { AvitoAccountsEntity } from 'src/modules/integrations/avito/entities/avito-accounts.entity';
 
 @Injectable()
 export class GnzsCacheService {
@@ -39,6 +40,22 @@ export class GnzsCacheService {
 
     del: async (id: number) => {
       const { key } = CACHING_EXP.BACKEND.AMO_ACCOUNT_DATA;
+      await this.cacheManager.del(key(id));
+    },
+  };
+  public readonly avitoAccount = {
+    set: async (id: number, accountData: AvitoAccountsEntity) => {
+      const { key, ttl } = CACHING_EXP.BACKEND.AVITO_ACCOUNT_DATA;
+      await this.cacheManager.set(key(id), accountData, ttl);
+    },
+
+    get: async (id: number): Promise<AvitoAccountsEntity> => {
+      const { key } = CACHING_EXP.BACKEND.AVITO_ACCOUNT_DATA;
+      return await this.cacheManager.get(key(id));
+    },
+
+    del: async (id: number) => {
+      const { key } = CACHING_EXP.BACKEND.AVITO_ACCOUNT_DATA;
       await this.cacheManager.del(key(id));
     },
   };
