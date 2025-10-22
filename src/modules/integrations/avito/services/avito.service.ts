@@ -46,10 +46,9 @@ export class AvitoService {
    */
   async sendTextMessage(dto: AvitoMessageTextDto): Promise<AvitoMessageResponseDto> {
     try {
-      const avitoApi = await this.getAvitoApi(dto.userId);
       const { userId, chatId, text } = dto;
+      const avitoApi = await this.getAvitoApi(userId);
       const result = await avitoApi.sendMessage({ userId, chatId, text });
-
       this.loki.log(`Текст отправлен в чат ${dto.chatId}`);
       return result;
     } catch (error) {
@@ -60,10 +59,9 @@ export class AvitoService {
    * Отправить изображение в чат Avito
    */
   async sendImageMessage(dto: AvitoMessageImageDto): Promise<AvitoMessageResponseDto> {
-    const { userId, chatId, file } = dto;
     try {
+      const { userId, chatId, file } = dto;
       utils.checkingFileSize(file, 24);
-
       const avitoApi = await this.getAvitoApi(userId);
 
       // 1. Загружаем
@@ -76,7 +74,6 @@ export class AvitoService {
 
       // 2. Отправляем
       const result = await avitoApi.sendImageMessage({ userId, chatId, imageId: imageId });
-
       this.loki.log(`Изображение отправлено в чат ${dto.chatId}`);
 
       return result;
