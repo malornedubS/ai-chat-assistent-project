@@ -1,12 +1,6 @@
 import { AccountEntity } from 'src/modules/accounts/entities/account.entity';
 
-import {
-  Column,
-  Entity,
-  JoinColumn,
-  OneToOne,
-  PrimaryGeneratedColumn,
-} from 'typeorm';
+import { Column, Entity, JoinColumn, OneToOne, PrimaryGeneratedColumn } from 'typeorm';
 import { Info } from '../dto/info.account.dto';
 
 @Entity('amo_accounts')

@@ -5,11 +5,7 @@ import { TiktokenModel } from '@dqbd/tiktoken';
 
 @Injectable()
 export class ChatGptTokenizerService {
-  countTokens(
-    messages: ChatGptMessageDto[],
-    model: string,
-    instructions = '',
-  ): number {
+  countTokens(messages: ChatGptMessageDto[], model: string, instructions = ''): number {
     const enc = encodingForModel(model as TiktokenModel);
     let tokens = 0;
 

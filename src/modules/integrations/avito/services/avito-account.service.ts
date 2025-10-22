@@ -27,10 +27,7 @@ export class AvitoAccountsService {
       }
 
       // 2. Извлечение из БД
-      const entity = await this.repo.findOne({
-        where: { id },
-        relations: ['account'],
-      });
+      const entity = await this.repo.findOne({ where: { id }, relations: ['account'] });
       this.loki.log('Достаем AvitoAccount из БД', entity);
 
       // 3. Кэширование
@@ -45,14 +42,9 @@ export class AvitoAccountsService {
     }
   }
 
-  async getByAvitoAccountId(
-    avitoAccountId: number,
-  ): Promise<AvitoAccountsEntity> {
+  async getByAvitoAccountId(avitoAccountId: number): Promise<AvitoAccountsEntity> {
     try {
-      const entity = await this.repo.findOne({
-        where: { avitoAccountId },
-        relations: ['account'],
-      });
+      const entity = await this.repo.findOne({ where: { avitoAccountId }, relations: ['account'] });
 
       if (entity) {
         await this.cache.avitoAccount.set(entity.id, entity);
@@ -66,10 +58,7 @@ export class AvitoAccountsService {
     }
   }
 
-  async create(
-    avitoAccountData: avitoAccountDto,
-    accountId: number,
-  ): Promise<AvitoAccountsEntity> {
+  async create(avitoAccountData: avitoAccountDto, accountId: number): Promise<AvitoAccountsEntity> {
     try {
       // 1. Создаём запись в БД
       const avitoAccount = this.repo.create({
@@ -91,10 +80,7 @@ export class AvitoAccountsService {
     }
   }
 
-  async update(
-    id: number,
-    updateData: Partial<AvitoAccountsEntity>,
-  ): Promise<AvitoAccountsEntity> {
+  async update(id: number, updateData: Partial<AvitoAccountsEntity>): Promise<AvitoAccountsEntity> {
     try {
       // 1. Проверяем существование записи
       const existing = await this.getOne(id);
@@ -106,10 +92,7 @@ export class AvitoAccountsService {
       await this.repo.update(id, updateData);
 
       // 3. Получаем обновлённую версию
-      const updated = await this.repo.findOne({
-        where: { id },
-        relations: ['account'],
-      });
+      const updated = await this.repo.findOne({ where: { id }, relations: ['account'] });
 
       if (!updated) {
         throw new Error('Failed to update AvitoAccount');

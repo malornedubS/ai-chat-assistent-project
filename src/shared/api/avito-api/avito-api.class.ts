@@ -28,48 +28,30 @@ export default class AvitoApi {
   /**
    * Отправить сообщение в чат
    */
-  public async sendMessage(
-    params: AvitoSendMessageParams,
-  ): Promise<AvitoMessageResponse> {
+  public async sendMessage(params: AvitoSendMessageParams): Promise<AvitoMessageResponse> {
     const payload: AvitoMessageRequest = {
       type: MessageTypes.text,
       message: {
         text: params.text,
       },
     };
-    return this.api
-      .post(
-        `/messenger/v1/accounts/${params.userId}/chats/${params.chatId}/messages`,
-        payload,
-      )
-      .then((resp) => resp?.data);
+    return this.api.post(`/messenger/v1/accounts/${params.userId}/chats/${params.chatId}/messages`, payload).then((resp) => resp?.data);
   }
   /**
    * Отправить изображение в чат
    */
-  public async sendImageMessage(
-    params: AvitoSendMessageParams,
-  ): Promise<AvitoImageMessageResponse> {
+  public async sendImageMessage(params: AvitoSendMessageParams): Promise<AvitoImageMessageResponse> {
     const payload = {
       image_id: params.imageId,
     };
 
-    return this.api
-      .post(
-        `/messenger/v1/accounts/${params.userId}/chats/${params.chatId}/messages/image`,
-        payload,
-      )
-      .then((resp) => resp.data);
+    return this.api.post(`/messenger/v1/accounts/${params.userId}/chats/${params.chatId}/messages/image`, payload).then((resp) => resp.data);
   }
 
   /**
    * Загрузка изображения на сервер Avito
    */
-  public async uploadImage(
-    userId: number,
-    imageBuffer: Buffer,
-    filename: string,
-  ): Promise<AvitoImageUploadResponse> {
+  public async uploadImage(userId: number, imageBuffer: Buffer, filename: string): Promise<AvitoImageUploadResponse> {
     const formData = new FormData();
     const contentType = lookup(filename) || 'application/octet-stream'; // или лучше сделать утилиту с разрешениями?
     formData.append('uploadfile[]', imageBuffer, { filename, contentType });
@@ -88,27 +70,21 @@ export default class AvitoApi {
    */
   public async getChatMessages(dto: AvitoMessagesGetStoryDto) {
     return this.api
-      .get(
-        `/messenger/v3/accounts/${dto.userId}/chats/${dto.chatId}/messages`,
-        {
-          params: { limit: dto.limit, offset: dto.offset },
-        },
-      )
+      .get(`/messenger/v3/accounts/${dto.userId}/chats/${dto.chatId}/messages`, {
+        params: { limit: dto.limit, offset: dto.offset },
+      })
       .then((resp) => resp?.data);
   }
   /**
    * Инофрмация о пользователе
    */
-  public static async getUserInfo(accessToken: string): Promise<any> {
-    const response = await axios.get(
-      `${process.env.AVITO_API_URL}/core/v1/accounts/self`,
-      {
-        headers: {
-          Authorization: `Bearer ${accessToken}`,
-          'Content-Type': 'application/json',
-        },
+  public async getUserInfo(): Promise<any> {
+    const response = await axios.get(`${process.env.AVITO_API_URL}/core/v1/accounts/self`, {
+      headers: {
+        Authorization: `Bearer ${this.token}`,
+        'Content-Type': 'application/json',
       },
-    );
+    });
     return response.data;
   }
 
@@ -187,6 +163,20 @@ export default class AvitoApi {
     );
 
     return response.data;
+  }
+
+  /**
+   * Генерация URL для авторизации Avito
+   */
+  public static getAuthUrl(accountId: number): string {
+    const clientId = process.env.AVITO_CLIENT_ID;
+    const redirectUri = process.env.AVITO_REDIRECT_URL;
+    const scope = 'messenger:read,messenger:write,user:read';
+    const state = `${accountId}-${Date.now()}`;
+
+    return `https://avito.ru/oauth?response_type=code&client_id=${clientId}&scope=${scope}&redirect_uri=${encodeURIComponent(
+      redirectUri,
+    )}&state=${state}`;
   }
 
   public static async getAccessToken(): Promise<{

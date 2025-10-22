@@ -1,12 +1,4 @@
-import {
-  Entity,
-  Column,
-  JoinColumn,
-  CreateDateColumn,
-  UpdateDateColumn,
-  OneToOne,
-  PrimaryColumn,
-} from 'typeorm';
+import { Entity, Column, JoinColumn, CreateDateColumn, UpdateDateColumn, OneToOne, PrimaryColumn } from 'typeorm';
 import { AvitoAccountsEntity } from './avito-accounts.entity';
 
 @Entity('avito_tokens')

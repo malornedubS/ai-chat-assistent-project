@@ -1,6 +1,6 @@
 import { ApiProperty } from '@nestjsx/crud/lib/crud';
 
-export class AvitoMessageSendImageDto {
+export class AvitoMessageImageDto {
   @ApiProperty({ description: 'ID пользователя Avito', example: 418842707 })
   userId: number;
 

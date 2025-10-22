@@ -29,10 +29,7 @@ export const numeralWord = (digit: number, words: string[]) => {
  * @param lang
  * @returns
  */
-export const getPhoneValidError = (
-  phone: string,
-  lang: LanguageType = 'ru',
-) => {
+export const getPhoneValidError = (phone: string, lang: LanguageType = 'ru') => {
   const phoneDigits = String(phone).replace(/[^\d;]/g, '');
   let errorText = '';
   const invalids = [
@@ -50,20 +47,14 @@ export const getPhoneValidError = (
     '98765432',
   ];
 
-  if (
-    phoneDigits.length < 11 ||
-    invalids.some((inv) => phoneDigits.includes(inv))
-  ) {
+  if (phoneDigits.length < 11 || invalids.some((inv) => phoneDigits.includes(inv))) {
     errorText = LOCALE[lang].PHONE_NOT_VALID();
   }
 
   return errorText;
 };
 
-export const getOauth2ReGrantAccess = (
-  topLevelDomain: string,
-  integrationId: string,
-): string => {
+export const getOauth2ReGrantAccess = (topLevelDomain: string, integrationId: string): string => {
   if (!topLevelDomain?.length) topLevelDomain = 'ru';
   return `https://www.amocrm.${topLevelDomain}/oauth?client_id=${integrationId}`;
 };
@@ -91,58 +82,46 @@ export const LOCALE = {
     PAYMENT_URL: () => PAYMENT_URL,
     ACITVATION_EXPIRED: () => `Период активации закончился`,
     ACITVATION_SOON_EXPIRED: (daysLeft: number) =>
-      `Виджет отключится через ${daysLeft} ${numeralWord(daysLeft, [
-        'день',
-        'дня',
-        'дней',
-      ])}. Продлите активацию`,
-    PHONE_NOT_VALID: () =>
-      `Проверьте корректность ввода номера телефона для технической поддержки`,
+      `Виджет отключится через ${daysLeft} ${numeralWord(daysLeft, ['день', 'дня', 'дней'])}. Продлите активацию`,
+    PHONE_NOT_VALID: () => `Проверьте корректность ввода номера телефона для технической поддержки`,
     BUTTON_PROLONG: () => `Продлить`,
     BUTTON_SEE_DETAIL: () => `Подробнее об интеграции`,
     BUTTON_GRANT_AUTH: () => `Выдать доступ к авторизации`,
     CONTACT_US: () => contactUsHtml_ru(),
-    AMO_AUTH_ERROR_TEXT: () =>
-      `Ошибка авторизации. Необходимо повторно выдать доступ (кликните по уведомлению)`,
+    AMO_AUTH_ERROR_TEXT: () => `Ошибка авторизации. Необходимо повторно выдать доступ (кликните по уведомлению)`,
   },
   en: {
     PAYMENT_URL: () => PAYMENT_URL,
     ACITVATION_EXPIRED: () => `Activation period has expired`,
-    ACITVATION_SOON_EXPIRED: (daysLeft: number) =>
-      `The widget will turn off after ${daysLeft} days. Extend activation`,
+    ACITVATION_SOON_EXPIRED: (daysLeft: number) => `The widget will turn off after ${daysLeft} days. Extend activation`,
     PHONE_NOT_VALID: () => `Phone number is invalid`,
     BUTTON_PROLONG: () => `Prolong`,
     BUTTON_SEE_DETAIL: () => `See detail about integration`,
     BUTTON_GRANT_AUTH: () => `Grant authorization access`,
     CONTACT_US: () => '',
-    AMO_AUTH_ERROR_TEXT: () =>
-      `Authorisation Error. You need to re-grant access (click here)`,
+    AMO_AUTH_ERROR_TEXT: () => `Authorisation Error. You need to re-grant access (click here)`,
   },
   es: {
     PAYMENT_URL: () => PAYMENT_URL,
     ACITVATION_EXPIRED: () => `El período de activación ha finalizado`,
-    ACITVATION_SOON_EXPIRED: (daysLeft: number) =>
-      `El widget se apagará después de ${daysLeft} días. Ampliar activación`,
+    ACITVATION_SOON_EXPIRED: (daysLeft: number) => `El widget se apagará después de ${daysLeft} días. Ampliar activación`,
     PHONE_NOT_VALID: () => `El número de teléfono no es válido`,
     BUTTON_PROLONG: () => `Ampliar`,
     BUTTON_SEE_DETAIL: () => `Más sobre integración`,
     BUTTON_GRANT_AUTH: () => `Otorgar acceso de autorización`,
     CONTACT_US: () => '',
-    AMO_AUTH_ERROR_TEXT: () =>
-      `Error de autorización. Necesita volver a otorgar acceso (haga clic aquí)`,
+    AMO_AUTH_ERROR_TEXT: () => `Error de autorización. Necesita volver a otorgar acceso (haga clic aquí)`,
   },
   pt: {
     PAYMENT_URL: () => PAYMENT_URL,
     ACITVATION_EXPIRED: () => `O período de ativação terminou`,
-    ACITVATION_SOON_EXPIRED: (daysLeft: number) =>
-      `O widget será desligado após ${daysLeft} dias. Estender a ativação`,
+    ACITVATION_SOON_EXPIRED: (daysLeft: number) => `O widget será desligado após ${daysLeft} dias. Estender a ativação`,
     PHONE_NOT_VALID: () => `O número de telefone é inválido`,
     BUTTON_PROLONG: () => `Ampliar`,
     BUTTON_SEE_DETAIL: () => `Mais sobre integração`,
     BUTTON_GRANT_AUTH: () => `Conceder acesso de autorização`,
     CONTACT_US: () => '',
-    AMO_AUTH_ERROR_TEXT: () =>
-      `Erro de autorização. Você precisa conceder novamente o acesso (clique aqui)`,
+    AMO_AUTH_ERROR_TEXT: () => `Erro de autorização. Você precisa conceder novamente o acesso (clique aqui)`,
   },
 };
 
@@ -178,20 +157,14 @@ export const camelCaseKeys = <T extends Record<string, any>>(object: T) => {
   const camelCased = {};
   Object.entries(object).forEach(([k, value]) => {
     const key = [];
-    k.split('_').forEach((v, i) =>
-      i > 0 ? key.push(v.charAt(0).toUpperCase() + v.slice(1)) : key.push(v),
-    );
+    k.split('_').forEach((v, i) => (i > 0 ? key.push(v.charAt(0).toUpperCase() + v.slice(1)) : key.push(v)));
     camelCased[key.join('')] = value;
   });
 
   return camelCased;
 };
 
-export const getNonMatchingElements = (
-  array1: any[],
-  array2: any[],
-  criteria: (first: any, second: any) => boolean,
-) => {
+export const getNonMatchingElements = (array1: any[], array2: any[], criteria: (first: any, second: any) => boolean) => {
   const nonMatchingElements = [];
   for (let i = 0; i < array1.length; i++) {
     let found = false;
@@ -220,5 +193,4 @@ export const preparePhone = (phone: string | number): number | null => {
   return parseInt(preparedPhone);
 };
 
-export const deepClone = (object: Record<string, any>) =>
-  JSON.parse(JSON.stringify(object));
+export const deepClone = (object: Record<string, any>) => JSON.parse(JSON.stringify(object));

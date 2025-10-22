@@ -1,10 +1,6 @@
 import { NestFactory } from '@nestjs/core';
 import { NestApplicationOptions, ValidationPipe } from '@nestjs/common';
-import {
-  SwaggerModule,
-  DocumentBuilder,
-  SwaggerCustomOptions,
-} from '@nestjs/swagger';
+import { SwaggerModule, DocumentBuilder, SwaggerCustomOptions } from '@nestjs/swagger';
 import { AppModule } from './app.module';
 import 'dotenv/config';
 import * as basicAuth from 'express-basic-auth';
@@ -50,11 +46,7 @@ async function bootstrap() {
   //   );
   // }
 
-  const configSwagger = new DocumentBuilder()
-    .setTitle('Your awesome API')
-    .setDescription('Описание API')
-    .setVersion('1.0')
-    .build();
+  const configSwagger = new DocumentBuilder().setTitle('Your awesome API').setDescription('Описание API').setVersion('1.0').build();
 
   const documentSwagger = SwaggerModule.createDocument(app, configSwagger);
 

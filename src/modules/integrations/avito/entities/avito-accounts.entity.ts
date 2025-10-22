@@ -1,11 +1,4 @@
-import {
-  Entity,
-  Column,
-  ManyToOne,
-  JoinColumn,
-  PrimaryGeneratedColumn,
-  OneToOne,
-} from 'typeorm';
+import { Entity, Column, ManyToOne, JoinColumn, PrimaryGeneratedColumn, OneToOne } from 'typeorm';
 
 import { AvitoTokensEntity } from './avito-tokens.entity';
 import { AccountEntity } from 'src/modules/accounts/entities/account.entity';

@@ -7,10 +7,7 @@ import { AvitoTokensService } from '../integrations/avito/services/avito-token.s
 import { LokiLogger } from 'gnzs-platform-modules';
 
 @Module({
-  imports: [
-    ScheduleModule.forRoot(),
-    TypeOrmModule.forFeature([AvitoTokensEntity]),
-  ],
+  imports: [ScheduleModule.forRoot(), TypeOrmModule.forFeature([AvitoTokensEntity])],
   providers: [CronService, AvitoTokensService, LokiLogger],
 })
 export class CronModule {}

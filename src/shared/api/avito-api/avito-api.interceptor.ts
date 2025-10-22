@@ -30,13 +30,7 @@ export const AvitoApiInterceptor = {
       onFulfilled: (resp) => {
         const { status, statusText, headers, data } = resp;
         const { baseURL, url, method } = resp.config;
-        logger.logResponse(
-          baseURL + url,
-          method,
-          status,
-          { data, statusText, headers },
-          'RESPONSE FROM AVITO API',
-        );
+        logger.logResponse(baseURL + url, method, status, { data, statusText, headers }, 'RESPONSE FROM AVITO API');
 
         if (status == 204) {
           throw new HttpException('no content', status);
@@ -51,9 +45,9 @@ export const AvitoApiInterceptor = {
 
         const { status, statusText, config, data } = error?.response;
 
-        const errorMsg = `RESPONSE FROM AVITO API [${config?.method?.toUpperCase()}] ${
-          config.baseURL + config.url
-        } - ${status}: ${statusText} (${data?.detail || 'no detail'})`;
+        const errorMsg = `RESPONSE FROM AVITO API [${config?.method?.toUpperCase()}] ${config.baseURL + config.url} - ${status}: ${statusText} (${
+          data?.detail || 'no detail'
+        })`;
 
         if (status) {
           logger.error(errorMsg, {

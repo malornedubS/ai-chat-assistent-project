@@ -1,10 +1,6 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { LokiLogger } from 'gnzs-platform-modules';
-import {
-  AmoCreateDto,
-  AmoGetManyDto,
-  AmoUpdateDto,
-} from './dto/amo-account.dto';
+import { AmoCreateDto, AmoGetManyDto, AmoUpdateDto } from './dto/amo-account.dto';
 import { AmoAccountEntity } from './entities/amo-account.entity';
 import { Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -75,10 +71,7 @@ export class AmoAccountsService {
     }
   }
 
-  async update(
-    id: number,
-    updateAmoDto: AmoUpdateDto,
-  ): Promise<AmoAccountEntity> {
+  async update(id: number, updateAmoDto: AmoUpdateDto): Promise<AmoAccountEntity> {
     try {
       // 1. Проверяем существование записи
       const existing = await this.getOne(id);

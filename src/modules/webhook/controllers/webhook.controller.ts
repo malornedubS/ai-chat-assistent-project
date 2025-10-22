@@ -1,5 +1,4 @@
 import { Body, Controller, Post } from '@nestjs/common';
-
 import { ApiResponse, ApiTags } from '@nestjs/swagger';
 import { AmoWebhookDto } from '../dto/amocrm-webhook.dto';
 import { AmoCrmService } from 'src/modules/integrations/amo-crm/services/amo-crm.service';
@@ -11,10 +10,7 @@ import { AvitoMessageWebhookDto } from 'src/modules/integrations/avito/dto/avito
 @ApiTags('webhook')
 @Controller('webhook')
 export class WebhookController {
-  constructor(
-    private readonly amocrmService: AmoCrmService,
-    private readonly avitoService: AvitoService,
-  ) {}
+  constructor(private readonly amocrmService: AmoCrmService, private readonly avitoService: AvitoService) {}
 
   @Post('amocrm')
   async processWebhook(@Body() webhook: AmoWebhookDto): Promise<void> {
@@ -23,9 +19,7 @@ export class WebhookController {
 
   @Post('avito')
   @ApiResponse({ status: 200, description: 'Вебхук успешно принят' })
-  async processAvitoWebhook(
-    @Body() body: AvitoMessageWebhookDto,
-  ): Promise<{ status: string }> {
+  async processAvitoWebhook(@Body() body: AvitoMessageWebhookDto): Promise<{ status: string }> {
     console.log('AVITO WEBHOOK: ');
     console.log('Body:', JSON.stringify(body, null, 2));
 

@@ -9,21 +9,11 @@ export class TypeOrmLogger implements Logger {
     //console.log(`QUERY: ${query}, --PARAMETERS: ${parameters?.join('')}`);
   }
 
-  async logQueryError(
-    error: string | Error,
-    query: string,
-    parameters?: any[],
-  ) {
-    console.log(
-      `QUERY FAILED: ${query}, --PARAMETERS: ${parameters?.join(
-        '',
-      )}, ERROR: ${error}`,
-    );
+  async logQueryError(error: string | Error, query: string, parameters?: any[]) {
+    console.log(`QUERY FAILED: ${query}, --PARAMETERS: ${parameters?.join('')}, ERROR: ${error}`);
 
     try {
-      await LokiLogger.sendTgNotify(
-        `[${APP_NAME}]: Query failed: ${query.slice(0, 100)}`,
-      );
+      await LokiLogger.sendTgNotify(`[${APP_NAME}]: Query failed: ${query.slice(0, 100)}`);
     } catch (e) {
       console.log('Ошибка логирования', serializedError(e));
     }
@@ -43,19 +33,10 @@ export class TypeOrmLogger implements Logger {
   }
 
   async logQuerySlow(time: number, query: string, parameters?: any[]) {
-    console.log(
-      `SLOW QUERY: ${query}, TIME: ${time}ms, --PARAMETERS: ${parameters?.join(
-        '',
-      )}`,
-    );
+    console.log(`SLOW QUERY: ${query}, TIME: ${time}ms, --PARAMETERS: ${parameters?.join('')}`);
 
     try {
-      await LokiLogger.sendTgNotify(
-        `[${APP_NAME}]: Slow query detected: ${query.slice(
-          0,
-          100,
-        )}, Time: ${time}ms`,
-      );
+      await LokiLogger.sendTgNotify(`[${APP_NAME}]: Slow query detected: ${query.slice(0, 100)}, Time: ${time}ms`);
     } catch (e) {
       console.log('Ошибка логирования', serializedError(e));
     }

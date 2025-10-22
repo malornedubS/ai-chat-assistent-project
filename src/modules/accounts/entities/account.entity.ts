@@ -1,12 +1,6 @@
 import { AmoAccountEntity } from 'src/modules/amo-accounts/entities/amo-account.entity';
 import { AvitoAccountsEntity } from 'src/modules/integrations/avito/entities/avito-accounts.entity';
-import {
-  Column,
-  Entity,
-  OneToMany,
-  OneToOne,
-  PrimaryGeneratedColumn,
-} from 'typeorm';
+import { Column, Entity, OneToMany, OneToOne, PrimaryGeneratedColumn } from 'typeorm';
 
 @Entity('accounts')
 export class AccountEntity {

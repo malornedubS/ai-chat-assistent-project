@@ -32,8 +32,7 @@ import { CronModule } from './modules/cron/cron.module';
     }),
     TypeOrmModule.forRootAsync({
       imports: [ConfigModule],
-      useFactory: (configService: ConfigService) =>
-        configService.get('dbPlatform'),
+      useFactory: (configService: ConfigService) => configService.get('dbPlatform'),
       inject: [ConfigService],
     }),
 

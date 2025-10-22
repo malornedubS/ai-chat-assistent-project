@@ -1,13 +1,5 @@
 import { ApiProperty } from '@nestjsx/crud/lib/crud';
-import {
-  IsArray,
-  IsEnum,
-  IsNotEmpty,
-  IsNumber,
-  IsOptional,
-  IsString,
-  ValidateNested,
-} from 'class-validator';
+import { IsArray, IsEnum, IsNotEmpty, IsNumber, IsOptional, IsString, ValidateNested } from 'class-validator';
 
 export type ChatGptRole = 'user' | 'assistant' | 'system';
 
@@ -42,8 +34,7 @@ export class ChatGptCreateDto {
 
   @ApiProperty({
     description: 'Системные инструкции — определяют поведение ассистента',
-    example:
-      'Ты — вежливый помощник в интернет-магазине. Отвечай кратко и по делу.',
+    example: 'Ты — вежливый помощник в интернет-магазине. Отвечай кратко и по делу.',
   })
   @IsOptional()
   @IsString()
@@ -72,8 +63,7 @@ export class ChatGptCreateDto {
   max_output_tokens?: number;
 
   @ApiProperty({
-    description:
-      'Параметр температуры: креативность ответа (0 = строго, 2 = креативно)',
+    description: 'Параметр температуры: креативность ответа (0 = строго, 2 = креативно)',
     example: 0.7,
     minimum: 0,
     maximum: 2,

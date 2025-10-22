@@ -10,10 +10,7 @@ import { Bot } from 'src/modules/bots/entities/bot.entity';
 export class ChatGptService {
   private readonly client: OpenAI;
 
-  constructor(
-    private readonly loki: LokiLogger,
-    private readonly tokenizerService: ChatGptTokenizerService,
-  ) {
+  constructor(private readonly loki: LokiLogger, private readonly tokenizerService: ChatGptTokenizerService) {
     this.loki.setContextName(ChatGptService.name);
 
     this.client = new OpenAI({
@@ -21,22 +18,13 @@ export class ChatGptService {
     });
   }
 
-  async generateMessage(
-    config: Bot,
-    messages: ChatGptMessageDto[],
-  ): Promise<ChatGptResponseDto> {
+  async generateMessage(config: Bot, messages: ChatGptMessageDto[]): Promise<ChatGptResponseDto> {
     // 1. Подсчет токенов
-    const tokens = await this.tokenizerService.countTokens(
-      messages,
-      config.instructions,
-      config.model,
-    );
+    const tokens = await this.tokenizerService.countTokens(messages, config.instructions, config.model);
     console.log(`Использовано токенов: ${tokens}`);
 
     if (tokens > config.maxOutputTokens) {
-      throw new Error(
-        `Превышен лимит токенов: ${tokens} > ${config.maxOutputTokens}`,
-      );
+      throw new Error(`Превышен лимит токенов: ${tokens} > ${config.maxOutputTokens}`);
     }
 
     // 2. Формирование запроса

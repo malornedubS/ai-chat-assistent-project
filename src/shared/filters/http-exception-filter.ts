@@ -1,9 +1,4 @@
-import {
-  ArgumentsHost,
-  Catch,
-  ExceptionFilter,
-  HttpException,
-} from '@nestjs/common';
+import { ArgumentsHost, Catch, ExceptionFilter, HttpException } from '@nestjs/common';
 import { serializedError } from 'src/shared/utils/app.utils';
 import { LokiLogger } from 'gnzs-platform-modules';
 import { APP_NAME } from 'src/shared/constants/app.constants';
@@ -25,9 +20,7 @@ export class HttpExceptionFilter implements ExceptionFilter {
     console.log('Необработанная ошибка:', { e: error });
 
     try {
-      await LokiLogger.sendTgNotify(
-        `[${APP_NAME}]: Необработанная ошибка "${error?.message ?? ''}"`,
-      );
+      await LokiLogger.sendTgNotify(`[${APP_NAME}]: Необработанная ошибка "${error?.message ?? ''}"`);
     } catch (e) {
       console.log('Ошибка отправки сообщения', { e: error?.message ?? '' });
     }

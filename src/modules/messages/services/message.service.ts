@@ -7,10 +7,7 @@ import { MessageCreateDto } from '../dto/message-create.dto';
 
 @Injectable()
 export class MessageService {
-  constructor(
-    @InjectRepository(Messages) private messagesRepo: Repository<Messages>,
-    private readonly loki: LokiLogger,
-  ) {
+  constructor(@InjectRepository(Messages) private messagesRepo: Repository<Messages>, private readonly loki: LokiLogger) {
     this.loki.setContextName(MessageService.name);
   }
   /*Сохранение входящего сообщения в БД*/

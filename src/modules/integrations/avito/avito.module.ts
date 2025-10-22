@@ -15,22 +15,9 @@ import { AvitoAuthService } from './services/avito-auth.service';
 import { AvitoAccountsService } from './services/avito-account.service';
 
 @Module({
-  imports: [
-    TypeOrmModule.forFeature([AvitoTokensEntity, AvitoAccountsEntity]),
-    HttpModule,
-    GnzsCacheModule,
-    BotModule,
-    MessageModule,
-    AvitoApi,
-  ],
+  imports: [TypeOrmModule.forFeature([AvitoTokensEntity, AvitoAccountsEntity]), HttpModule, GnzsCacheModule, BotModule, MessageModule, AvitoApi],
   controllers: [AvitoController, AvitoAuthController],
-  providers: [
-    AvitoTokensService,
-    AvitoService,
-    AvitoApi,
-    AvitoAuthService,
-    AvitoAccountsService,
-  ],
+  providers: [AvitoTokensService, AvitoService, AvitoApi, AvitoAuthService, AvitoAccountsService],
   exports: [AvitoTokensService],
 })
 export class AvitoModule {}

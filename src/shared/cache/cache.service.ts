@@ -61,22 +61,20 @@ export class GnzsCacheService {
   };
 
   public readonly authToken = {
-    set: async (subdomain: string, token: string) => {
+    set: async (subdomain: string | number, token: string) => {
       const { key, ttl } = CACHING_EXP.BACKEND.AVITO_XAUTH_TOKEN;
-      await this.cacheManager.set(key(subdomain), token, ttl);
+      await this.cacheManager.set(key(subdomain.toString()), token, ttl);
     },
 
     get: async (subdomain: string | number) => {
       const { key } = CACHING_EXP.BACKEND.AVITO_XAUTH_TOKEN;
-      const cached = await this.cacheManager.get<string>(
-        key(subdomain.toString()),
-      );
+      const cached = await this.cacheManager.get<string>(key(subdomain.toString()));
       return cached;
     },
 
-    del: async (subdomain: string) => {
+    del: async (subdomain: string | number) => {
       const { key } = CACHING_EXP.BACKEND.AVITO_XAUTH_TOKEN;
-      await this.cacheManager.del(key(subdomain));
+      await this.cacheManager.del(key(subdomain.toString()));
     },
   };
 }

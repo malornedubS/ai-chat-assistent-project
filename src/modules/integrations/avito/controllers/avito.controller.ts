@@ -1,43 +1,26 @@
-import {
-  Body,
-  Controller,
-  Get,
-  Post,
-  Query,
-  UploadedFile,
-  UseInterceptors,
-} from '@nestjs/common';
+import { Body, Controller, Get, Post, Query, UploadedFile, UseInterceptors } from '@nestjs/common';
 import { AvitoService } from '../services/avito.service';
 import AvitoApi from 'src/shared/api/avito-api/avito-api.class';
 import { ApiBody, ApiConsumes, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { AvitoMessagesGetStoryDto } from '../dto/avito-messages-get-story.dto';
 import { FileInterceptor } from '@nestjs/platform-express';
-import { AvitoMessageSendTextDto } from '../dto/avito-message-send-text.dto';
-import { AvitoMessageSendImageDto } from '../dto/avito-message-send-image.dto';
+import { AvitoMessageSendDto } from '../dto/avito-message-send.dto';
 
 @Controller('avito')
-@ApiTags('avito/message')
+@ApiTags('avito')
 export class AvitoController {
   constructor(private readonly avitoService: AvitoService) {}
 
-  // Отправить сообщение в Avito
-  @Post('message/send/text')
-  @ApiOperation({ summary: 'Отправить сообщение в Avito' })
-  async sendMessage(@Body() dto: AvitoMessageSendTextDto) {
-    return this.avitoService.sendTextMessage(dto);
-  }
-
-  // Отправить изображение в Avito
-  @Post('message/send/image')
-  @ApiOperation({ summary: 'Отправить изображение в чат Avito' })
+  // Отправить сообщение в чат Avito
+  @Post('message/send')
+  @ApiOperation({ summary: 'Отправить сообщение в чат Avito' })
   @UseInterceptors(FileInterceptor('file'))
   @ApiConsumes('multipart/form-data')
-  @ApiBody({ type: AvitoMessageSendImageDto })
-  async sendImageMessage(
-    @Body() body: Omit<AvitoMessageSendImageDto, 'file'>,
-    @UploadedFile() file: any,
-  ) {
-    return this.avitoService.sendImageMessage({
+  @ApiBody({
+    type: AvitoMessageSendDto,
+  })
+  async sendMessage(@Body() body: Omit<AvitoMessageSendDto, 'file'>, @UploadedFile() file: Express.Multer.File) {
+    return this.avitoService.sendMessage({
       ...body,
       file,
     });

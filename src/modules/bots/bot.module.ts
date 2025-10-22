@@ -7,11 +7,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { Bot } from './entities/bot.entity';
 
 @Module({
-  imports: [
-    TypeOrmModule.forFeature([Bot]),
-    MessageModule,
-    forwardRef(() => ChatGptModule),
-  ],
+  imports: [TypeOrmModule.forFeature([Bot]), MessageModule, forwardRef(() => ChatGptModule)],
   providers: [BotService],
   exports: [BotService],
 })

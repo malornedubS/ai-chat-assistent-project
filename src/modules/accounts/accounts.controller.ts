@@ -1,10 +1,6 @@
 import { Body, Controller, Get, Param, Post, Put, Query } from '@nestjs/common';
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
-import {
-  AccountCreateDto,
-  AccountsGetManyDto,
-  AccountUpdateDto,
-} from './dto/account.dto';
+import { AccountCreateDto, AccountsGetManyDto, AccountUpdateDto } from './dto/account.dto';
 import { AccountsService } from './accounts.service';
 
 @Controller('/accounts')

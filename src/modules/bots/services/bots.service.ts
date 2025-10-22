@@ -37,10 +37,7 @@ export class BotService {
       content: message.text,
     }));
 
-    const outputMessages = await this.chatGptService.generateMessage(
-      config,
-      inputMessages,
-    );
+    const outputMessages = await this.chatGptService.generateMessage(config, inputMessages);
 
     // 4. Сохраняем ответ ИИ
     const aiMsg = await this.messageService.saveOutgoingMessage({

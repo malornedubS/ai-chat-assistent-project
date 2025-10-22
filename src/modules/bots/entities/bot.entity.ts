@@ -18,8 +18,7 @@ export class Bot {
 
   @ApiProperty({
     description: 'Системные инструкции — определяют поведение ассистента',
-    example:
-      'Ты — вежливый помощник в интернет-магазине. Отвечай кратко и по делу.',
+    example: 'Ты — вежливый помощник в интернет-магазине. Отвечай кратко и по делу.',
   })
   @Column({ type: 'text', nullable: true })
   instructions: string;
@@ -32,8 +31,7 @@ export class Bot {
   maxOutputTokens: number;
 
   @ApiProperty({
-    description:
-      'Параметр температуры: креативность ответа (0 = строго, 2 = креативно)',
+    description: 'Параметр температуры: креативность ответа (0 = строго, 2 = креативно)',
     example: 0.7,
   })
   @Column({ type: 'float', default: 0.7 })

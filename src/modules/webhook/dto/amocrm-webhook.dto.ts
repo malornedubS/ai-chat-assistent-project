@@ -1,12 +1,7 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { IsString, IsArray, ValidateNested } from 'class-validator';
 import { Type } from 'class-transformer';
-import {
-  AmoElementEnum,
-  AmoEntityEnum,
-  AuthorEnum,
-  MessageDirectionEnum,
-} from './enums.dto';
+import { AmoElementEnum, AmoEntityEnum, AuthorEnum, MessageDirectionEnum } from './enums.dto';
 
 export class AccountLinksDto {
   @IsString()

@@ -1,11 +1,7 @@
 import { Body, Controller, Get, Param, Post, Put, Query } from '@nestjs/common';
 import { ApiBody, ApiOperation, ApiTags } from '@nestjs/swagger';
 
-import {
-  AmoCreateDto,
-  AmoGetManyDto,
-  AmoUpdateDto,
-} from './dto/amo-account.dto';
+import { AmoCreateDto, AmoGetManyDto, AmoUpdateDto } from './dto/amo-account.dto';
 import { AmoAccountsService } from './amo-accounts.service';
 
 @Controller('/amo-accounts')

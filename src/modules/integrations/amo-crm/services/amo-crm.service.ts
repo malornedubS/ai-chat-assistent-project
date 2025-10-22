@@ -8,10 +8,7 @@ import { AmoWebhookDto } from 'src/modules/webhook/dto/amocrm-webhook.dto';
 
 @Injectable()
 export class AmoCrmService {
-  constructor(
-    private readonly botService: BotService,
-    private readonly loki: LokiLogger,
-  ) {
+  constructor(private readonly botService: BotService, private readonly loki: LokiLogger) {
     this.loki.setContextName(AmoCrmService.name);
   }
 
@@ -35,11 +32,7 @@ export class AmoCrmService {
 
   // Вытаскиваем нужные данные из вебхука amoCRM
   private extractAmoData(webhook: AmoWebhookDto): BotPayloadDto {
-    if (
-      !webhook.message ||
-      !webhook.message.add ||
-      webhook.message.add.length === 0
-    ) {
+    if (!webhook.message || !webhook.message.add || webhook.message.add.length === 0) {
       throw new Error('Сообщения в вебхуке не найдены');
     }
 
