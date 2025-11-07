@@ -19,7 +19,7 @@ export class AvitoTokensService {
 
   public async getToken(accountId: number): Promise<string> {
     try {
-      const cached = await this.cacheService.authToken.get(accountId);
+      const cached = await this.cacheService.avitoAuthToken.get(accountId);
       if (cached) return cached;
 
       const token = await this.repo.findOne({ where: { avitoAccountId: accountId } });
@@ -29,7 +29,7 @@ export class AvitoTokensService {
       }
 
       if (!this.isTokenExpired(token)) {
-        await this.cacheService.authToken.set(accountId, token.accessToken);
+        await this.cacheService.avitoAuthToken.set(accountId, token.accessToken);
         return token.accessToken;
       }
 
@@ -70,7 +70,7 @@ export class AvitoTokensService {
       const expiresAt = new Date(Date.now() + expiresIn * 1000);
 
       await this.repo.save({ avitoAccountId: accountId, accessToken, refreshToken, expiresAt });
-      await this.cacheService.authToken.set(accountId, accessToken);
+      await this.cacheService.avitoAuthToken.set(accountId, accessToken);
 
       this.logger.log(`Токен успешно обновлён для аккаунта ${accountId}`);
 
@@ -90,7 +90,7 @@ export class AvitoTokensService {
     const expiresAt = new Date(Date.now() + expiresIn * 1000);
 
     await this.repo.save({ avitoAccountId, accessToken, refreshToken, expiresAt });
-    await this.cacheService.authToken.set(avitoAccountId, accessToken);
+    await this.cacheService.avitoAuthToken.set(avitoAccountId, accessToken);
     this.logger.log(`Токены Avito успешно сохранены для аккаунта ${avitoAccountId}`);
   }
 

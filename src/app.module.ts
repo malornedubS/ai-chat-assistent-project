@@ -16,6 +16,7 @@ import { WebhookModule } from './modules/webhook/webhook.module';
 import { AvitoModule } from './modules/integrations/avito/avito.module';
 
 import { CronModule } from './modules/cron/cron.module';
+import { VkModule } from './modules/integrations/vk/vk.module';
 
 @Module({
   imports: [
@@ -54,6 +55,7 @@ import { CronModule } from './modules/cron/cron.module';
     ChatGptModule,
     BotModule,
     AvitoModule,
+    VkModule,
   ],
 })
 export class AppModule {}

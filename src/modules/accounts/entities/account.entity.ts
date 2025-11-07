@@ -1,5 +1,6 @@
 import { AmoAccountEntity } from 'src/modules/amo-accounts/entities/amo-account.entity';
 import { AvitoAccountsEntity } from 'src/modules/integrations/avito/entities/avito-accounts.entity';
+import { VkAccountsEntity } from 'src/modules/integrations/vk/entities/vk-accounts.entity';
 import { Column, Entity, OneToMany, OneToOne, PrimaryGeneratedColumn } from 'typeorm';
 
 @Entity('accounts')
@@ -21,4 +22,7 @@ export class AccountEntity {
 
   @OneToMany(() => AvitoAccountsEntity, (avitoAccount) => avitoAccount.account)
   avitoAccount: AvitoAccountsEntity[];
+
+  @OneToMany(() => VkAccountsEntity, (vkUser) => vkUser.account)
+  vkUsers: VkAccountsEntity[];
 }

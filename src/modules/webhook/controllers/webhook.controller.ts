@@ -1,4 +1,4 @@
-import { Body, Controller, Post } from '@nestjs/common';
+import { Body, Controller, HttpCode, Post } from '@nestjs/common';
 import { ApiResponse, ApiTags } from '@nestjs/swagger';
 import { AmoWebhookDto } from '../dto/amocrm-webhook.dto';
 import { AmoCrmService } from 'src/modules/integrations/amo-crm/services/amo-crm.service';
@@ -24,5 +24,21 @@ export class WebhookController {
     console.log('Body:', JSON.stringify(body, null, 2));
 
     return { status: 'ok' };
+  }
+
+  @Post('vk')
+  @HttpCode(200)
+  handleWebhook(@Body() body: any): string {
+    console.log('VK Webhook:', body);
+
+    if (body.type === 'confirmation') {
+      return ' f681b587';
+    }
+
+    if (body.type === 'message_new') {
+      console.log('New message:', body.object.message);
+    }
+
+    return 'ok';
   }
 }

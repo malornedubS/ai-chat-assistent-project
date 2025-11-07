@@ -5,6 +5,7 @@ import { CACHING_EXP } from 'config/constants';
 import { AmoAccountEntity } from 'src/modules/amo-accounts/entities/amo-account.entity';
 import { AccountEntity } from 'src/modules/accounts/entities/account.entity';
 import { AvitoAccountsEntity } from 'src/modules/integrations/avito/entities/avito-accounts.entity';
+import { VkAccountsEntity } from 'src/modules/integrations/vk/entities/vk-accounts.entity';
 
 @Injectable()
 export class GnzsCacheService {
@@ -60,7 +61,24 @@ export class GnzsCacheService {
     },
   };
 
-  public readonly authToken = {
+  public readonly vkAccount = {
+    set: async (id: number, accountData: VkAccountsEntity) => {
+      const { key, ttl } = CACHING_EXP.BACKEND.VK_ACCOUNT_DATA;
+      await this.cacheManager.set(key(id), accountData, ttl);
+    },
+
+    get: async (id: number): Promise<VkAccountsEntity> => {
+      const { key } = CACHING_EXP.BACKEND.VK_ACCOUNT_DATA;
+      return await this.cacheManager.get(key(id));
+    },
+
+    del: async (id: number) => {
+      const { key } = CACHING_EXP.BACKEND.VK_ACCOUNT_DATA;
+      await this.cacheManager.del(key(id));
+    },
+  };
+
+  public readonly avitoAuthToken = {
     set: async (subdomain: string | number, token: string) => {
       const { key, ttl } = CACHING_EXP.BACKEND.AVITO_XAUTH_TOKEN;
       await this.cacheManager.set(key(subdomain.toString()), token, ttl);
@@ -74,6 +92,24 @@ export class GnzsCacheService {
 
     del: async (subdomain: string | number) => {
       const { key } = CACHING_EXP.BACKEND.AVITO_XAUTH_TOKEN;
+      await this.cacheManager.del(key(subdomain.toString()));
+    },
+  };
+
+  public readonly vkAuthToken = {
+    set: async (subdomain: string | number, token: string) => {
+      const { key, ttl } = CACHING_EXP.BACKEND.VK_AUTH_TOKEN;
+      await this.cacheManager.set(key(subdomain.toString()), token, ttl);
+    },
+
+    get: async (subdomain: string | number) => {
+      const { key } = CACHING_EXP.BACKEND.VK_AUTH_TOKEN;
+      const cached = await this.cacheManager.get<string>(key(subdomain.toString()));
+      return cached;
+    },
+
+    del: async (subdomain: string | number) => {
+      const { key } = CACHING_EXP.BACKEND.VK_AUTH_TOKEN;
       await this.cacheManager.del(key(subdomain.toString()));
     },
   };

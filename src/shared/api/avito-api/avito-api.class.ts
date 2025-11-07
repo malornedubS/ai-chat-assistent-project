@@ -101,7 +101,7 @@ export default class AvitoApi {
       code,
       client_id: process.env.AVITO_CLIENT_ID,
       client_secret: process.env.AVITO_CLIENT_SECRET,
-      redirect_uri: process.env.AVITO_REDIRECT_URL,
+      redirect_uri: process.env.AVITO_REDIRECT_URI,
     };
 
     const { access_token, refresh_token, expires_in } = (
@@ -170,7 +170,7 @@ export default class AvitoApi {
    */
   public static getAuthUrl(accountId: number): string {
     const clientId = process.env.AVITO_CLIENT_ID;
-    const redirectUri = process.env.AVITO_REDIRECT_URL;
+    const redirectUri = process.env.AVITO_REDIRECT_URI;
     const scope = 'messenger:read,messenger:write,user:read';
     const state = `${accountId}-${Date.now()}`;
 
