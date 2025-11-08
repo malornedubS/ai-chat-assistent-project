@@ -97,9 +97,8 @@ export class VkAuthService {
     const { vkUserId, vkGroupId } = utils.VkStateUtil.decode<{ vkUserId: number; vkGroupId: number }>(state);
     const data = await VkApi.getGroupAccessToken(code);
 
-    for (const g of data.groups) {
-      await this.vkTokensService.saveGroupToken(vkUserId, g.group_id, g.access_token);
-    }
+    const g = data.groups[0];
+    await this.vkTokensService.saveGroupToken(vkUserId, g.group_id, g.access_token);
 
     return { vkGroupId };
   }
