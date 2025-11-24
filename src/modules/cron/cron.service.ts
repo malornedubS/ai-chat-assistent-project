@@ -7,7 +7,7 @@ import { AvitoTokensEntity } from '../integrations/avito/entities/avito-tokens.e
 import { AvitoTokensService } from '../integrations/avito/services/avito-token.service';
 import { VkTokensService } from '../integrations/vk/services/vk-tokens.service';
 import { MyCronExpressions } from 'config/constants';
-import { VkTokenEntity } from '../integrations/vk/entities/vk-tokens.entity';
+import { VkUsersTokenEntity } from '../integrations/vk/entities/vk-users-tokens.entity';
 
 @Injectable()
 export class CronService {
@@ -16,8 +16,8 @@ export class CronService {
     private readonly vkTokensService: VkTokensService,
     @InjectRepository(AvitoTokensEntity)
     private readonly avitoRepo: Repository<AvitoTokensEntity>,
-    @InjectRepository(VkTokenEntity)
-    private readonly vkRepo: Repository<VkTokenEntity>,
+    @InjectRepository(VkUsersTokenEntity)
+    private readonly vkRepo: Repository<VkUsersTokenEntity>,
     private readonly loki: LokiLogger,
   ) {
     this.loki.setContextName(CronService.name);

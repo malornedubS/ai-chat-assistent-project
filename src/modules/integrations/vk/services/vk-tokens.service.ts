@@ -4,16 +4,16 @@ import VkApi from 'src/shared/api/vk-api/vk-api.class';
 import { GnzsCacheService } from 'src/shared/cache';
 import { Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
-import { VkTokenEntity } from '../entities/vk-tokens.entity';
-import { VkGroupsTokenEntity } from '../entities/vk-groups-tokens';
+import { VkUsersTokenEntity } from '../entities/vk-users-tokens.entity';
+import { VkGroupsTokenEntity } from '../entities/vk-groups-tokens.entity';
 
 @Injectable()
 export class VkTokensService {
   private refreshingTokens: { [vkUserId: string]: boolean } = {};
 
   constructor(
-    @InjectRepository(VkTokenEntity)
-    private readonly repo: Repository<VkTokenEntity>,
+    @InjectRepository(VkUsersTokenEntity)
+    private readonly repo: Repository<VkUsersTokenEntity>,
     @InjectRepository(VkGroupsTokenEntity)
     private readonly repoGroup: Repository<VkGroupsTokenEntity>,
     private readonly logger: LokiLogger,

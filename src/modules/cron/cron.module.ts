@@ -6,11 +6,11 @@ import { AvitoTokensEntity } from '../integrations/avito/entities/avito-tokens.e
 import { AvitoTokensService } from '../integrations/avito/services/avito-token.service';
 import { LokiLogger } from 'gnzs-platform-modules';
 import { VkTokensService } from '../integrations/vk/services/vk-tokens.service';
-import { VkTokenEntity } from '../integrations/vk/entities/vk-tokens.entity';
-import { VkGroupsTokenEntity } from '../integrations/vk/entities/vk-groups-tokens';
+import { VkUsersTokenEntity } from '../integrations/vk/entities/vk-users-tokens.entity';
+import { VkGroupsTokenEntity } from '../integrations/vk/entities/vk-groups-tokens.entity';
 
 @Module({
-  imports: [ScheduleModule.forRoot(), TypeOrmModule.forFeature([AvitoTokensEntity, VkTokenEntity, VkGroupsTokenEntity])],
+  imports: [ScheduleModule.forRoot(), TypeOrmModule.forFeature([AvitoTokensEntity, VkUsersTokenEntity, VkGroupsTokenEntity])],
   providers: [CronService, AvitoTokensService, VkTokensService, LokiLogger],
 })
 export class CronModule {}

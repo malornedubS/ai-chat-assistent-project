@@ -42,14 +42,7 @@ export default class VkApi {
       access_token: this.token,
       v: '5.199',
     };
-    if (params.message?.trim()) {
-      payload.message = params.message.trim();
-    }
 
-    // Добавляем attachment только если есть
-    if (params.attachment) {
-      payload.attachment = params.attachment;
-    }
     return await this.api
       .post('messages.send', null, {
         params: payload,
@@ -60,9 +53,19 @@ export default class VkApi {
   /**
    * Загрузка изображения на сервер VK
    */
-  public async getMessagesUploadServer(peerId: number) {
+  public async getPhotoMessagesUploadServer(peerId: number) {
     return this.api
       .get('photos.getMessagesUploadServer', {
+        params: { peer_id: peerId, v: '5.199', access_token: this.token },
+      })
+      .then((r) => r.data.response);
+  }
+  /**
+   * Загрузка документа на сервер VK
+   */
+  public async getDocsMessagesUploadServer(peerId: number) {
+    return this.api
+      .get('docs.getMessagesUploadServer', {
         params: { peer_id: peerId, v: '5.199', access_token: this.token },
       })
       .then((r) => r.data.response);
@@ -75,6 +78,17 @@ export default class VkApi {
     return this.api
       .get('photos.saveMessagesPhoto', {
         params: { server, photo, hash, v: '5.199', access_token: this.token },
+      })
+      .then((r) => r.data.response);
+  }
+
+  /**
+   * Сохранение документа на сервере VK
+   */
+  public async saveMessagesDoc(file: string) {
+    return this.api
+      .get('docs.save', {
+        params: { file, v: '5.199', access_token: this.token },
       })
       .then((r) => r.data.response);
   }
@@ -96,12 +110,9 @@ export default class VkApi {
   /**
    * Загрузка файла на сервер VK
    */
-  public async uploadFileFromBuffer(uploadUrl: string, buffer: Buffer, filename: string) {
+  public async uploadFileBuffer(uploadUrl: string, buffer: Buffer, filename: string, fieldName: string) {
     const formData = new FormData();
-    formData.append('photo', buffer, {
-      filename,
-      contentType: 'image/jpeg',
-    });
+    formData.append(fieldName, buffer, { filename });
 
     const { data } = await this.api.post(uploadUrl, formData, {
       headers: formData.getHeaders(),

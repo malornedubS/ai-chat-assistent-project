@@ -2,7 +2,7 @@ import { Column, CreateDateColumn, Entity, JoinColumn, OneToOne, PrimaryColumn, 
 import { VkAccountsEntity } from './vk-accounts.entity';
 
 @Entity('vk_tokens')
-export class VkTokenEntity {
+export class VkUsersTokenEntity {
   @PrimaryColumn()
   vkUserId: number;
 

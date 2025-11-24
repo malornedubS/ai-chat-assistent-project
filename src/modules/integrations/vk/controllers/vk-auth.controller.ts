@@ -12,7 +12,7 @@ export class VkAuthController {
   @ApiOperation({ summary: 'Подключение VK -  URL для авторизации' })
   async connectVK(@Query('accountId') accountId: number) {
     const { authUrl } = this.vkAuthService.getAuthUrl(accountId);
-    return { authUrl };
+    return authUrl;
   }
 
   @Get('connect/group')

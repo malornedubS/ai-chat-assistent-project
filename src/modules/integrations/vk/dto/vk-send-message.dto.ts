@@ -29,7 +29,10 @@ export class VkSendMessageDto {
   @IsString()
   text?: string;
 
-  @ApiPropertyOptional()
+  @ApiPropertyOptional({
+    type: 'string',
+    format: 'binary',
+  })
   @IsOptional()
   attachments?: VkAttachmentDto[];
 }

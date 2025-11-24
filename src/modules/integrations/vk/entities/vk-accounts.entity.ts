@@ -1,15 +1,15 @@
 import { AccountEntity } from 'src/modules/accounts/entities/account.entity';
 import { Column, CreateDateColumn, Entity, JoinColumn, ManyToOne, OneToMany, OneToOne, PrimaryColumn, UpdateDateColumn } from 'typeorm';
-import { VkTokenEntity } from './vk-tokens.entity';
-import { VkGroupsTokenEntity } from './vk-groups-tokens';
+import { VkUsersTokenEntity } from './vk-users-tokens.entity';
+import { VkGroupsTokenEntity } from './vk-groups-tokens.entity';
 
 @Entity('vk_accounts')
 export class VkAccountsEntity {
-  @PrimaryColumn()
-  vkUserId: number;
-
   @Column()
   accountId: number;
+
+  @PrimaryColumn()
+  vkUserId: number;
 
   @Column()
   fullName: string;
@@ -24,8 +24,8 @@ export class VkAccountsEntity {
   @JoinColumn({ name: 'account_id' })
   account: AccountEntity;
 
-  @OneToOne(() => VkTokenEntity, (token) => token.vkUser)
-  token: VkTokenEntity;
+  @OneToOne(() => VkUsersTokenEntity, (token) => token.vkUser)
+  token: VkUsersTokenEntity;
 
   @OneToMany(() => VkGroupsTokenEntity, (groupToken) => groupToken.vkAccount)
   groupTokens: VkGroupsTokenEntity[];
