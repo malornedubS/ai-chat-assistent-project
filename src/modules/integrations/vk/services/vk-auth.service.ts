@@ -3,7 +3,6 @@ import VkApi from 'src/shared/api/vk-api/vk-api.class';
 import { LokiLogger } from 'gnzs-platform-modules';
 import * as utils from '../utils/vk-utils';
 import { VkTokensService } from './vk-tokens.service';
-import { VkService } from './vk.service';
 import { VkAccountsService } from './vk-accounts.servie';
 
 @Injectable()
@@ -11,7 +10,6 @@ export class VkAuthService {
   constructor(
     private readonly loki: LokiLogger,
     private readonly vkAccountsService: VkAccountsService,
-    private readonly vkService: VkService,
     private readonly vkTokensService: VkTokensService,
   ) {
     this.loki.setContextName(VkAuthService.name);
@@ -63,6 +61,7 @@ export class VkAuthService {
 
       const vkApi = new VkApi(tokens.access_token, this.loki);
       const userInfoResponse = await vkApi.getUserInfo();
+      console.log(userInfoResponse);
       const userInfo = userInfoResponse.response[0];
 
       const vkUserDto = utils.buildVkUserDto(userInfo);

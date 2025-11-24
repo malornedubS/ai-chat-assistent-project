@@ -1,5 +1,6 @@
 import * as crypto from 'crypto';
 import { VkAttachmentDto } from '../dto/vk-send-message.dto';
+import { VkUserDto } from '../dto/vk-accounts.dto';
 
 /**
  * PKCE utils
@@ -34,7 +35,7 @@ export function decodeVkState<T>(state: string): T {
 /**
  * VK user helpers
  */
-export function buildVkUserDto(user: any) {
+export function buildVkUserDto(user: VkApiUser): VkUserDto {
   return {
     vkUserId: user.id,
     fullName: `${user.first_name} ${user.last_name}`.trim(),
@@ -53,4 +54,12 @@ export function serializeAttachments(att?: VkAttachmentDto[]): string | undefine
       return a.accessKey ? `${base}_${a.accessKey}` : base;
     })
     .join(',');
+}
+
+export interface VkApiUser {
+  id: number;
+  first_name: string;
+  last_name: string;
+  can_access_closed?: boolean;
+  is_closed?: boolean;
 }
